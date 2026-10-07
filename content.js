@@ -91,8 +91,15 @@ window.CONTENT = {
           এবং শুধু নিজের ফাইল বা সরাসরি অডিও লিংক কাজ করে। */
     playerMode: "visible",
 
-  /* ব্যাকগ্রাউন্ড মিউজিকের আওয়াজ (0.0 = চুপ, 1.0 = পুরো) */
-  musicVolume: 0.45,
+  /* ----- ব্যাকগ্রাউন্ড মিউজিকের আওয়াজ (0.0 = চুপ, 1.0 = পুরো) */
+    musicVolume: 0.45,
+
+    /* ----- YouTube গান কীভাবে চলবে -----
+       "link"  = সাইটে কোনো ভিডিও দেখাবে না; শুধু একটা ▶ বাটন।
+                 চাপ দিলে নতুন ট্যাবে YouTube-এ গান খুলবে। (এখন এটা)
+       "embed" = সাইটের ভেতরেই গান বাজবে, কিন্তু YouTube-এর
+                 ভিডিও প্লেয়ার দেখা যাবে (ওটা লুকানো সম্ভব না)। */
+    youtubeMode: "link",
 
   /* ----- SONGS / SOUNDTRACK -----  গান দেওয়ার ৩ উপায়
      যেকোনো লাইন হুবহু এভাবে লিখুন — তিন রকমই একসাথে চলে।
@@ -115,16 +122,16 @@ window.CONTENT = {
      নিচের demo লাইনটা মুছে দিন। যত খুশি লাইন যোগ করুন। */
   songsTitle: "My Soundtrack",
   songs: [
-      { title: "HER",                artist: "Chase Atlantic",              youtube: "https://youtu.be/wNliit0-u7c" },
+      { title: "her",                artist: "JVKE",                        youtube: "https://youtu.be/mpxEUex3dek" },
       { title: "Nevada",             artist: "Vicetone, Cozi Zuehlsdorff",  youtube: "https://youtu.be/QqccaHauSKQ" },
       { title: "Him & I",            artist: "G-Eazy, Halsey",              youtube: "https://youtu.be/SA7AIQw-7Ms" },
       { title: "After Dark",         artist: "Mr.Kitty",                    youtube: "https://youtu.be/sVx1mJDeUjY" },
       { title: "Sweater Weather",    artist: "The Neighbourhood",           youtube: "https://youtu.be/GCdwKhTtNNw" },
       { title: "Daddy Issues",       artist: "The Neighbourhood",           youtube: "https://youtu.be/_lMlsPQJs6U" },
-      { title: "bury a friend",      artist: "Billie Eilish",               youtube: "https://youtu.be/HUHC9tYz8ik" },
       { title: "Do I Wanna Know?",   artist: "Arctic Monkeys",              youtube: "https://youtu.be/bpOSxM0rNPM" },
       { title: "MIDDLE OF THE NIGHT",artist: "Elley Duhé",                  youtube: "https://youtu.be/oSHzUD-uqKY" },
-      { title: "Another Love",       artist: "Tom Odell",                   youtube: "https://youtu.be/MwpMEbgC7DA" }
+      { title: "Another Love",       artist: "Tom Odell",                   youtube: "https://youtu.be/MwpMEbgC7DA" },
+      { title: "Space Song",         artist: "Beach House",                 youtube: "https://youtu.be/RBtlPT23PTM" }
     ],
 
   /* ----- CLOSING ----- */

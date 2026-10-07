@@ -1035,7 +1035,7 @@
       const listEl = $('tracks'), hintEl = $('songHint');
       if (!list.length) {
         if (listEl) listEl.remove();
-        if (hintEl) hintEl.textContent = 'কোনো গান পাওয়া যায়নি। songs/ ফোল্ডারে mp3 রাখুন, বা সরাসরি অডিও লিংক দিন।';
+        if (hintEl) hintEl.textContent = '';
         return;
       }
 
@@ -1093,8 +1093,7 @@
       paintBtn();
 
       if (listEl.scrollHeight > listEl.clientHeight + 4) listEl.classList.add('scrollable');
-      if (hintEl) hintEl.textContent = 'গানের নামে চাপ দিলেই বাজবে — থামাতে আবার চাপুন।'
-        + (allSongs.length > list.length ? '  (YouTube-এর গান এই মোডে বাদ পড়েছে।)' : '');
+      if (hintEl) hintEl.textContent = '';
 
       au.addEventListener('ended', () => {
         ci = (ci + 1) % list.length; au.src = list[ci].src; au.play().catch(() => {}); mark();
@@ -1157,7 +1156,8 @@
         player.classList.add('yt');
         ytWrap.innerHTML = '';
         const watch = 'https://www.youtube.com/watch?v=' + vid;
-        if (location.protocol === 'file:') {
+                const wantEmbed = (location.protocol !== 'file:') && (String(CONTENT.youtubeMode || 'link') === 'embed');
+                if (!wantEmbed) {
           // file:// থেকে YouTube embed কাজ করে না (YouTube এখন referrer চায়)।
           // তাই থাম্বনেইল কার্ড — চাপ দিলে YouTube-এ খুলবে।
           const a = document.createElement('a');
@@ -1202,7 +1202,7 @@
       btnToggle.disabled = btnPrev.disabled = btnNext.disabled = seekEl.disabled = true;
       npTitle.textContent = 'No song added yet';
       npArtist.textContent = 'songs/ folder';
-      hintEl.textContent = 'এখনো কোনো song যোগ করা হয়নি। songs/ ফোল্ডারে mp3 ফাইল রাখুন, তারপর content.js ফাইলে songs তালিকায় নাম লিখুন।';
+      hintEl.textContent = '';
     } else {
       songs.forEach((s, n) => {
         const li = document.createElement('li');
@@ -1219,12 +1219,12 @@
         });
         li.appendChild(b); listEl.appendChild(li); rows.push(b);
       });
-      hintEl.textContent = 'নিজের গান যোগ করতে: mp3 ফাইলগুলো songs/ ফোল্ডারে রাখুন, তারপর content.js ফাইলে songs তালিকায় নাম লিখুন।';
+      hintEl.textContent = '';
             select(0);
             // তালিকা লম্বা হলে স্ক্রলযোগ্য করে দাও
             if (listEl.scrollHeight > listEl.clientHeight + 4) {
               listEl.classList.add('scrollable');
-              hintEl.textContent += ' উপরে-নিচে স্ক্রল করলে বাকি গানগুলো দেখতে পাবেন।';
+              hintEl.textContent = '';
             }
     }
 
