@@ -122,17 +122,17 @@ window.CONTENT = {
      নিচের demo লাইনটা মুছে দিন। যত খুশি লাইন যোগ করুন। */
   songsTitle: "My Soundtrack",
   songs: [
-      { title: "her",                artist: "JVKE",                        youtube: "https://youtu.be/mpxEUex3dek" },
-      { title: "Nevada",             artist: "Vicetone, Cozi Zuehlsdorff",  youtube: "https://youtu.be/QqccaHauSKQ" },
-      { title: "Him & I",            artist: "G-Eazy, Halsey",              youtube: "https://youtu.be/SA7AIQw-7Ms" },
-      { title: "After Dark",         artist: "Mr.Kitty",                    youtube: "https://youtu.be/sVx1mJDeUjY" },
-      { title: "Sweater Weather",    artist: "The Neighbourhood",           youtube: "https://youtu.be/GCdwKhTtNNw" },
-      { title: "Daddy Issues",       artist: "The Neighbourhood",           youtube: "https://youtu.be/_lMlsPQJs6U" },
-      { title: "Do I Wanna Know?",   artist: "Arctic Monkeys",              youtube: "https://youtu.be/bpOSxM0rNPM" },
-      { title: "MIDDLE OF THE NIGHT",artist: "Elley Duhé",                  youtube: "https://youtu.be/oSHzUD-uqKY" },
-      { title: "Another Love",       artist: "Tom Odell",                   youtube: "https://youtu.be/MwpMEbgC7DA" },
-      { title: "Space Song",         artist: "Beach House",                 youtube: "https://youtu.be/RBtlPT23PTM" }
-    ],
+        { title: "her",                artist: "JVKE",                        youtube: "https://youtu.be/mpxEUex3dek" },
+        { title: "Nevada",             artist: "Vicetone, Cozi Zuehlsdorff",  youtube: "https://youtu.be/QqccaHauSKQ" },
+        { title: "Him & I",            artist: "G-Eazy, Halsey",              youtube: "https://youtu.be/SA7AIQw-7Ms" },
+        { title: "After Dark",         artist: "Mr.Kitty",                    youtube: "https://youtu.be/sVx1mJDeUjY" },
+        { title: "Sweater Weather",    artist: "The Neighbourhood",           youtube: "https://youtu.be/GCdwKhTtNNw" },
+        { title: "Daddy Issues",       artist: "The Neighbourhood",           youtube: "https://youtu.be/_lMlsPQJs6U" },
+        { title: "Do I Wanna Know?",   artist: "Arctic Monkeys",              youtube: "https://youtu.be/bpOSxM0rNPM" },
+        { title: "MIDDLE OF THE NIGHT",artist: "Elley Duhé",                  youtube: "https://youtu.be/oSHzUD-uqKY" },
+        { title: "Another Love",       artist: "Tom Odell",                   youtube: "https://youtu.be/MwpMEbgC7DA" },
+        { title: "Space Song",         artist: "Beach House",                 youtube: "https://youtu.be/RBtlPT23PTM" }
+      ],
 
   /* ----- CLOSING ----- */
   closingTitle: "And Now",
