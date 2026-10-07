@@ -122,10 +122,13 @@ window.CONTENT = {
      নিচের demo লাইনটা মুছে দিন। যত খুশি লাইন যোগ করুন। */
   songsTitle: "My Soundtrack",
   songs: [
-        { title: "her",                artist: "JVKE",                        youtube: "https://youtu.be/mpxEUex3dek" },
-        { title: "Nevada",             artist: "Vicetone, Cozi Zuehlsdorff",  youtube: "https://youtu.be/QqccaHauSKQ" },
-        { title: "Him & I",            artist: "G-Eazy, Halsey",              youtube: "https://youtu.be/SA7AIQw-7Ms" },
-        { title: "After Dark",         artist: "Mr.Kitty",                    youtube: "https://youtu.be/sVx1mJDeUjY" },
+        /* ===== সাইটের ভেতরেই বাজবে — ফাইল আছে songs/ ফোল্ডারে ===== */
+        { title: "her",          artist: "JVKE",                      src: "songs/her.mp3" },
+        { title: "Nevada",       artist: "Vicetone, Cozi Zuehlsdorff", src: "songs/nevada.mp3" },
+        { title: "Him & I",      artist: "G-Eazy, Halsey",            src: "songs/him-and-i.mp3" },
+        { title: "After Dark",   artist: "Mr.Kitty",                  src: "songs/after-dark.mp3" },
+
+        /* ===== ▶ চাপলে YouTube-এ খুলবে ===== */
         { title: "Sweater Weather",    artist: "The Neighbourhood",           youtube: "https://youtu.be/GCdwKhTtNNw" },
         { title: "Daddy Issues",       artist: "The Neighbourhood",           youtube: "https://youtu.be/_lMlsPQJs6U" },
         { title: "Do I Wanna Know?",   artist: "Arctic Monkeys",              youtube: "https://youtu.be/bpOSxM0rNPM" },
