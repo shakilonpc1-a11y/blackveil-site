@@ -1,0 +1,1446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Story</title>
+<meta name="description" content="A personal statement, told in motion.">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="theme-color" content="#0a0505">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Sora:wght@200;300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#000000;
+    --ink:#f2eeea;
+    --muted:#8d867e;
+    --line:rgba(242,238,234,.11);
+    --accent:#d2413c;
+    --ember:#6e1414;
+    --accent-rgb:210,65,60;
+    --ember-rgb:110,20,20;
+    --accent-hi:#ff8f7a;
+    --on-accent:#150404;
+    --accent-soft:rgba(210,65,60,.18);
+    --display:"Fraunces",Georgia,"Times New Roman",serif;
+    --sans:"Sora",system-ui,-apple-system,"Segoe UI",sans-serif;
+    --pad:clamp(20px,5vw,72px);
+    --ease:cubic-bezier(.2,.7,.2,1);
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);
+    font-family:var(--sans);font-weight:300;line-height:1.65;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  }
+  ::selection{background:var(--accent);color:var(--on-accent)}
+
+  /* ============ ambient layers ============ */
+  .pointer-light{
+    position:fixed;top:0;left:0;width:62vmax;height:62vmax;
+    margin:-31vmax 0 0 -31vmax;border-radius:50%;
+    background:radial-gradient(circle,rgba(var(--accent-rgb),.11),rgba(var(--ember-rgb),.05) 40%,transparent 66%);
+    mix-blend-mode:screen;pointer-events:none;z-index:3;
+    opacity:0;transition:opacity .6s ease;
+    will-change:transform;
+  }
+  body.pointer-on .pointer-light{opacity:1}
+
+  #dust{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+
+  .grain{
+    position:fixed;inset:-150%;z-index:4;pointer-events:none;opacity:.05;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    animation:grain 6s steps(6) infinite;
+  }
+  @keyframes grain{
+    0%{transform:translate(0,0)}     20%{transform:translate(-6%,3%)}
+    40%{transform:translate(4%,-4%)} 60%{transform:translate(-3%,-6%)}
+    80%{transform:translate(5%,4%)}  100%{transform:translate(0,0)}
+  }
+
+  .aurora{
+    position:fixed;top:-35vh;left:50%;width:140vw;height:100vh;
+    transform:translateX(-50%);pointer-events:none;z-index:0;filter:blur(46px);
+    background:
+      radial-gradient(38% 46% at 46% 42%, rgba(var(--accent-rgb),.20), transparent 70%),
+      radial-gradient(34% 40% at 66% 58%, rgba(var(--ember-rgb),.20), transparent 72%);
+    animation:aurora 26s ease-in-out infinite alternate;
+  }
+  @keyframes aurora{
+    from{transform:translateX(-50%) translateY(0) scale(1)}
+    to{transform:translateX(-53%) translateY(5vh) scale(1.14)}
+  }
+
+  .vignette{
+    position:fixed;inset:0;z-index:2;pointer-events:none;
+    background:
+      radial-gradient(130% 78% at 50% -6%, rgba(var(--accent-rgb),.09), transparent 62%),
+      radial-gradient(150% 105% at 50% 108%, rgba(0,0,0,.9), transparent 58%),
+      linear-gradient(180deg, rgba(0,0,0,.35), transparent 28%);
+  }
+
+  .progress{
+    position:fixed;top:0;left:0;height:2px;width:0%;z-index:20;
+    background:linear-gradient(90deg,var(--ember),var(--accent),var(--accent-hi));
+    box-shadow:0 0 14px rgba(var(--accent-rgb),.75);
+  }
+
+  /* ============ veil intro ============ */
+  .veil{position:fixed;inset:0;z-index:60;pointer-events:none}
+  .veil .half{
+    position:absolute;top:0;bottom:0;width:50.5%;background:#000;
+    transition:transform 1.15s cubic-bezier(.76,0,.24,1);
+  }
+  .veil .half.l{left:0;box-shadow:26px 0 60px rgba(var(--accent-rgb),.10)}
+  .veil .half.r{right:0;box-shadow:-26px 0 60px rgba(var(--accent-rgb),.10)}
+  .veil .seam{
+    position:absolute;top:0;bottom:0;left:50%;width:1px;transform:translateX(-50%);
+    background:linear-gradient(transparent,rgba(var(--accent-rgb),.9),transparent);
+    transition:opacity .55s ease;
+  }
+  body.ready .half.l{transform:translateX(-101%)}
+  body.ready .half.r{transform:translateX(101%)}
+  body.ready .seam{opacity:0}
+
+  /* ============ shell ============ */
+  .wrap{position:relative;z-index:1;width:min(1180px,100%);margin:0 auto;padding-inline:var(--pad)}
+
+  /* ============ rail nav ============ */
+  .rail{
+    position:fixed;right:clamp(14px,2.4vw,34px);top:50%;transform:translateY(-50%);
+    z-index:15;display:flex;flex-direction:column;gap:16px;
+    opacity:0;transition:opacity .8s ease .3s;
+  }
+  body.ready .rail{opacity:1}
+  .rail button{
+    position:relative;display:flex;align-items:center;gap:12px;
+    background:none;border:0;padding:6px 2px;cursor:pointer;
+    color:var(--muted);font-family:var(--sans);font-size:.6rem;
+    letter-spacing:.22em;text-transform:uppercase;
+  }
+  .rail button::before{
+    content:"";width:22px;height:1px;background:currentColor;opacity:.45;
+    transition:width .45s var(--ease),opacity .45s ease;
+  }
+  .rail button span{
+    position:absolute;right:100%;margin-right:14px;white-space:nowrap;
+    opacity:0;transform:translateX(6px);transition:.4s var(--ease);
+  }
+  .rail button:hover{color:var(--ink)}
+  .rail button:hover span{opacity:1;transform:none}
+  .rail button.on{color:var(--accent)}
+  .rail button.on::before{width:40px;opacity:1}
+
+  /* ============ hero ============ */
+  .hero{
+      position:relative;z-index:1;min-height:100svh;display:flex;
+      align-items:center;justify-content:center;
+      padding-block:clamp(44px,7vh,92px);
+    }
+    .hero .wrap{display:flex;flex-direction:column;align-items:center;text-align:center}
+    .eyebrow{
+      font-size:.72rem;letter-spacing:.34em;text-transform:uppercase;color:var(--accent);
+      margin:0 0 clamp(14px,3vh,28px);display:flex;align-items:center;
+      justify-content:center;gap:14px;
+      animation:fadeUp .9s .55s both var(--ease);
+    }
+    .eyebrow::before,.eyebrow::after{content:"";height:1px;width:clamp(26px,7vw,80px);flex:none}
+    .eyebrow::before{background:linear-gradient(90deg,transparent,var(--accent))}
+    .eyebrow::after{background:linear-gradient(90deg,var(--accent),transparent)}
+
+  .name{
+    font-family:var(--display);font-weight:600;font-style:italic;
+    font-size:clamp(3.4rem,13.5vw,11.5rem);
+    line-height:.92;letter-spacing:-.03em;margin:0;
+    font-variation-settings:"opsz" 144;text-wrap:balance;
+    will-change:transform,opacity;
+  }
+  .name .ln{display:block;overflow:hidden;padding-bottom:.06em}
+  .name .ch{
+    display:inline-block;transform:translateY(112%) rotate(4deg);
+    animation:rise 1.2s .75s both cubic-bezier(.19,.9,.28,1);
+  }
+  @keyframes rise{to{transform:translateY(0) rotate(0)}}
+
+  /* light sweep across the name */
+  .name .sweep{
+    position:absolute;inset:0;pointer-events:none;mix-blend-mode:screen;
+    background:linear-gradient(104deg,transparent 38%,rgba(255,226,168,.5) 50%,transparent 62%);
+    background-size:260% 100%;background-position:180% 0;
+    animation:sweep 5.6s 2.4s ease-in-out infinite;
+  }
+  @keyframes sweep{
+    0%{background-position:190% 0;opacity:0}
+    8%{opacity:.9}
+    38%{background-position:-90% 0;opacity:0}
+    100%{background-position:-90% 0;opacity:0}
+  }
+  .name-wrap{position:relative;display:inline-block}
+
+  .tagline{
+      font-size:clamp(1rem,2.1vw,1.32rem);color:var(--muted);max-width:46ch;
+      margin:clamp(20px,4vh,34px) auto 0;
+      animation:fadeUp 1s 1.5s both var(--ease);
+    }
+  .tagline em{color:var(--ink);font-style:normal;border-bottom:1px solid var(--accent-soft)}
+
+  .hero-foot{
+    margin-top:clamp(34px,7vh,64px);display:flex;align-items:center;gap:22px;
+    animation:fadeUp 1s 1.75s both var(--ease);
+  }
+  .scroll-cue{
+    font-size:.7rem;letter-spacing:.28em;text-transform:uppercase;color:var(--muted);
+    display:flex;align-items:center;gap:10px;
+  }
+  .scroll-cue::before{
+    content:"";width:1px;height:44px;
+    background:linear-gradient(var(--accent),transparent);
+    animation:cue 2.4s ease-in-out infinite;
+  }
+  @keyframes cue{0%,100%{opacity:.35;transform:scaleY(.6)}50%{opacity:1;transform:scaleY(1)}}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+
+  /* ============ hero extras ============ */
+  .hero{overflow:hidden}
+  .hero-mark{
+    position:absolute;right:clamp(-30px,-2vw,0px);bottom:-7vh;z-index:0;
+    font-family:var(--display);font-style:italic;font-weight:600;
+    font-size:clamp(14rem,42vw,36rem);line-height:.7;
+    color:transparent;-webkit-text-stroke:1px rgba(var(--accent-rgb),.18);
+    pointer-events:none;user-select:none;
+    opacity:0;transition:opacity 1.8s ease 1.15s;
+    animation:markFloat 17s ease-in-out infinite alternate;
+  }
+  body.ready .hero-mark{opacity:1}
+  @keyframes markFloat{
+    from{transform:translateY(0) rotate(-1.2deg)}
+    to{transform:translateY(-2.6vh) rotate(1.2deg)}
+  }
+
+  .chips{
+      display:flex;flex-wrap:wrap;justify-content:center;gap:10px;
+      margin-top:clamp(22px,4vh,34px);
+      animation:fadeUp 1s 1.6s both var(--ease);
+    }
+  .chip{
+    font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);padding:8px 14px;border-radius:999px;
+    transition:border-color .4s ease,color .4s ease,transform .4s var(--ease);
+  }
+  .chip:hover{border-color:rgba(var(--accent-rgb),.55);color:var(--ink);transform:translateY(-2px)}
+
+  .quick{
+      display:flex;flex-wrap:wrap;justify-content:center;gap:clamp(10px,2vw,20px);
+      margin-top:clamp(20px,3.6vh,30px);
+      animation:fadeUp 1s 1.75s both var(--ease);
+    }
+  .qjump{
+      position:relative;display:inline-flex;align-items:center;gap:9px;
+      padding:11px 19px;border:1px solid rgba(var(--accent-rgb),.38);border-radius:999px;
+            background:rgba(var(--accent-rgb),.07);
+            color:rgba(242,238,234,.82);font-family:var(--sans);font-size:.68rem;
+      letter-spacing:.2em;text-transform:uppercase;cursor:pointer;
+      transition:border-color .4s ease,color .4s ease,background .4s ease,transform .4s var(--ease);
+    }
+    .qjump::after{
+      content:"\2193";font-size:.82rem;line-height:1;opacity:.65;
+      transition:transform .4s var(--ease),opacity .4s ease;
+    }
+    .qjump:hover{
+      border-color:rgba(var(--accent-rgb),.65);color:var(--accent);
+      background:rgba(var(--accent-rgb),.10);transform:translateY(2px);
+    }
+    .qjump:hover::after{transform:translateY(2px);opacity:1}
+
+  .lead{
+    margin:clamp(16px,3vh,26px) 0 0;color:var(--muted);
+    font-size:clamp(.95rem,1.6vw,1.05rem);max-width:62ch;text-wrap:pretty;
+  }
+  .lead:empty{display:none}
+
+  /* ============ touch / click burst ============ */
+  .fx-layer{position:fixed;inset:0;z-index:30;pointer-events:none;overflow:hidden}
+  .ripple{
+    position:absolute;border-radius:50%;
+    transform:translate(-50%,-50%) scale(.12);
+    border:1.5px solid rgba(var(--c),.9);
+    background:radial-gradient(circle, rgba(var(--c),.32), transparent 70%);
+    box-shadow:0 0 22px rgba(var(--c),.65), inset 0 0 16px rgba(var(--c),.25);
+    animation:rippleOut .78s cubic-bezier(.2,.7,.2,1) forwards;
+  }
+  @keyframes rippleOut{
+    0%{opacity:.95;transform:translate(-50%,-50%) scale(.12)}
+    55%{opacity:.6}
+    100%{opacity:0;transform:translate(-50%,-50%) scale(2)}
+  }
+
+  .music-toggle{
+    position:fixed;left:clamp(14px,2.4vw,28px);bottom:clamp(14px,2.4vw,28px);
+    z-index:25;width:46px;height:46px;border-radius:50%;
+    border:1px solid var(--line);background:rgba(0,0,0,.55);
+    -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+    color:var(--muted);cursor:pointer;display:grid;place-items:center;
+    font-size:1.05rem;line-height:1;padding:0;
+    opacity:.5;
+    transition:opacity .4s ease,border-color .4s ease,color .4s ease,transform .4s var(--ease);
+  }
+  .music-toggle:hover{opacity:1;border-color:rgba(var(--accent-rgb),.6);transform:translateY(-2px)}
+  .music-toggle.on{color:var(--accent);border-color:rgba(var(--accent-rgb),.5);opacity:.85}
+  .music-toggle.on span{animation:beat 1.7s ease-in-out infinite;display:inline-block}
+  @keyframes beat{0%,100%{transform:scale(1)}50%{transform:scale(1.28)}}
+
+  /* ============ sections ============ */
+  section{padding-block:clamp(72px,14vh,150px)}
+  section.pinned{padding-block:0}
+
+  .section-head{
+    position:relative;display:flex;align-items:baseline;gap:clamp(14px,3vw,34px);
+    padding-bottom:clamp(20px,4vh,36px);border-bottom:1px solid var(--line);
+  }
+  .section-head::after{
+    content:"";position:absolute;left:0;bottom:-1px;height:1px;width:0;
+    background:linear-gradient(90deg,var(--accent),transparent);
+    transition:width 1.2s var(--ease) .15s;
+  }
+  .section-head.in::after{width:100%}
+  .section-head h2{
+    font-family:var(--display);font-weight:400;font-size:clamp(1.7rem,4.4vw,3.1rem);
+    letter-spacing:-.02em;margin:0;line-height:1.05;
+  }
+
+  /* ============ quotes (pinned, scroll-driven) ============ */
+  .pin-track{position:relative;height:min(calc(var(--nq,5) * 60svh), 420svh)}
+  .pin-sticky{position:sticky;top:0;height:100svh;display:flex;align-items:center}
+  .pin-sticky .wrap{width:100%}
+  .pin-stage{
+    position:relative;margin:0;padding-left:clamp(20px,4.5vw,52px);
+    border-left:1px solid var(--accent-soft);min-height:clamp(150px,26vh,230px);
+    display:flex;align-items:center;
+  }
+  .pin-stage::before{
+    content:"“";position:absolute;left:clamp(12px,3vw,40px);top:-.36em;
+    font-family:var(--display);font-size:clamp(4rem,12vw,9rem);
+    color:var(--accent);opacity:.2;line-height:1;pointer-events:none;
+  }
+  .pin-text{
+    opacity:0;filter:blur(10px);transform:translateY(22px) scale(.985);
+    transition:opacity .6s var(--ease),filter .6s var(--ease),transform .6s var(--ease);
+  }
+  .pin-text.in{opacity:1;filter:blur(0);transform:none}
+
+  #quoteText{
+      font-family:var(--display);font-weight:300;font-size:clamp(1.5rem,4.4vw,3.1rem);
+      line-height:1.24;letter-spacing:-.018em;margin:0;text-wrap:pretty;
+      white-space:pre-line;
+    }
+
+  /* ---------- And Now — story (সাধারণ তালিকা, scroll পদ্ধতি নেই) ---------- */
+  .story-list{margin-top:clamp(34px,7vh,70px);display:grid;gap:clamp(26px,5vh,50px)}
+  .story-item{padding-top:clamp(18px,3.4vh,30px);border-top:1px solid var(--line)}
+  .story-item h3{
+    font-family:var(--display);font-weight:500;
+    font-size:clamp(1.05rem,2.4vw,1.65rem);letter-spacing:-.015em;
+    line-height:1.2;margin:0 0 .55em;
+  }
+  .story-item p{
+    margin:0;color:rgba(242,238,234,.78);
+    font-size:clamp(.98rem,1.5vw,1.08rem);line-height:1.7;
+    max-width:64ch;text-wrap:pretty;
+  }
+
+  .pin-meter{
+    margin:clamp(24px,5vh,44px) 0 0 clamp(20px,4.5vw,52px);
+    height:1px;background:var(--line);position:relative;max-width:560px;
+  }
+  .pin-meter span{
+    position:absolute;left:0;top:0;bottom:0;width:0%;background:var(--accent);
+    box-shadow:0 0 12px rgba(var(--accent-rgb),.6);
+    transition:width .6s var(--ease);
+  }
+  .pin-count{
+    margin:14px 0 0 clamp(20px,4.5vw,52px);display:flex;align-items:center;gap:8px;
+    font-size:.72rem;letter-spacing:.26em;color:var(--muted);font-variant-numeric:tabular-nums;
+  }
+  .pin-count #qIdx{color:var(--accent)}
+  .q-sep{opacity:.5}
+
+  .skip{
+    margin-left:auto;display:inline-flex;align-items:center;gap:9px;
+    background:none;border:1px solid var(--line);border-radius:999px;
+    padding:9px 17px;cursor:pointer;
+    font-family:var(--sans);font-size:.64rem;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--muted);
+    transition:border-color .4s ease,color .4s ease,transform .4s var(--ease);
+  }
+  .skip::after{content:"\2193";font-size:.85rem;line-height:1;transition:transform .4s var(--ease)}
+  .skip:hover{border-color:rgba(var(--accent-rgb),.6);color:var(--accent);transform:translateY(2px)}
+  .skip:hover::after{transform:translateY(2px)}
+
+  /* ============ soundtrack ============ */
+  .player{
+    margin-top:clamp(30px,6vh,56px);border:1px solid var(--line);
+    padding:clamp(18px,3.4vw,30px);position:relative;overflow:hidden;
+    background:linear-gradient(180deg,rgba(245,241,234,.03),transparent 70%);
+  }
+  .player::after{
+    content:"";position:absolute;inset:0;pointer-events:none;opacity:0;
+    background:radial-gradient(60% 120% at 12% 50%,rgba(var(--accent-rgb),.10),transparent 70%);
+    transition:opacity .7s ease;
+  }
+  .player.playing::after{opacity:1}
+  .player-top{display:flex;align-items:center;justify-content:space-between;gap:clamp(16px,4vw,40px);flex-wrap:wrap}
+  .np{display:flex;align-items:center;gap:clamp(16px,3vw,26px);min-width:0;flex:1}
+
+  .disc{position:relative;flex:0 0 auto;width:60px;height:60px}
+    .disc-ring{
+      position:absolute;inset:0;border-radius:50%;
+      background:conic-gradient(var(--accent) calc(var(--p,0) * 1turn), rgba(245,241,234,.13) 0);
+      -webkit-mask:radial-gradient(closest-side,transparent 68%,#000 69%);
+              mask:radial-gradient(closest-side,transparent 68%,#000 69%);
+      transition:filter .5s ease;
+    }
+    .player.playing .disc-ring{filter:drop-shadow(0 0 8px rgba(var(--accent-rgb),.65))}
+    .disc-core{
+      position:absolute;inset:9px;border-radius:50%;
+      background:
+        radial-gradient(circle at 50% 50%, rgba(var(--accent-rgb),.85) 0 9%, transparent 10%),
+        repeating-radial-gradient(circle at 50% 50%, rgba(245,241,234,.09) 0 1px, transparent 1px 4px),
+        radial-gradient(circle at 50% 50%, #191512, #050505 70%);
+    }
+    .player.playing .disc-core{animation:spin 5.5s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+  .np-meta{min-width:0}
+  .np-title{
+    display:block;font-family:var(--display);font-weight:500;
+    font-size:clamp(1.02rem,2.2vw,1.4rem);letter-spacing:-.01em;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:46ch;
+  }
+  .np-artist{
+    display:block;font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--muted);margin-top:2px;
+  }
+
+  .controls{display:flex;align-items:center;gap:clamp(8px,1.6vw,14px)}
+  .ctl{
+    position:relative;width:44px;height:44px;border-radius:50%;
+    border:1px solid var(--line);background:none;color:var(--ink);
+    display:grid;place-items:center;cursor:pointer;padding:0;
+    transition:border-color .35s ease,color .35s ease,transform .35s ease,box-shadow .35s ease;
+  }
+  .ctl svg{width:15px;height:15px;fill:currentColor}
+  .ctl:hover{border-color:var(--accent);color:var(--accent);box-shadow:0 0 18px rgba(var(--accent-rgb),.22)}
+  .ctl:active{transform:scale(.92)}
+  .ctl.play{width:58px;height:58px;border-color:var(--accent);color:var(--accent)}
+  .ctl.play svg{width:18px;height:18px}
+  .ctl.play::after{
+    content:"";position:absolute;inset:-1px;border-radius:50%;
+    border:1px solid var(--accent);opacity:0;
+  }
+  .player.playing .ctl.play::after{animation:pulse 2.1s ease-out infinite}
+  @keyframes pulse{
+    0%{opacity:.7;transform:scale(1)}
+    100%{opacity:0;transform:scale(1.55)}
+  }
+  .ctl:disabled{opacity:.28;cursor:not-allowed}
+  .ctl:disabled:hover{border-color:var(--line);color:var(--ink);box-shadow:none}
+
+  .player.yt .seek{display:none}
+  .player.yt .ctl.play{display:none}
+  .yt-wrap{margin-top:clamp(18px,3vh,26px)}
+  .yt-wrap[hidden]{display:none}
+  .yt-wrap iframe{display:block;width:100%;aspect-ratio:16/9;border:0;background:#000}
+  .yt-card{
+    display:flex;align-items:center;justify-content:center;
+    height:clamp(92px,13vh,132px);
+    text-decoration:none;background:rgba(245,241,234,.025);
+    border:1px solid var(--line);
+    transition:border-color .45s ease,background .45s ease;
+  }
+  .yt-card:hover,.yt-card:focus-visible{
+    border-color:rgba(var(--accent-rgb),.55);
+    background:rgba(var(--accent-rgb),.07);outline:none;
+  }
+  .yt-card .yt-play{
+    width:64px;height:64px;border-radius:50%;
+    display:grid;place-items:center;font-size:1.25rem;
+    color:var(--on-accent);background:var(--accent);padding-left:4px;
+    box-shadow:0 0 28px rgba(var(--accent-rgb),.55);
+    transition:transform .45s var(--ease),box-shadow .45s ease;
+  }
+  .yt-card:hover .yt-play,.yt-card:focus-visible .yt-play{
+    transform:scale(1.12);box-shadow:0 0 40px rgba(var(--accent-rgb),.75);
+  }
+
+  .seek{
+    display:flex;align-items:center;gap:14px;margin-top:22px;
+    font-size:.72rem;color:var(--muted);font-variant-numeric:tabular-nums;
+  }
+  .track{position:relative;flex:1;height:24px;background:none;border:0;padding:0;cursor:pointer}
+  .track::before{
+    content:"";position:absolute;top:50%;left:0;right:0;height:1px;
+    background:var(--line);transform:translateY(-50%);
+  }
+  .track .fill{
+    position:absolute;top:50%;left:0;height:1px;width:0%;
+    background:var(--accent);transform:translateY(-50%);
+  }
+  .track .knob{
+    position:absolute;top:50%;left:0;width:9px;height:9px;border-radius:50%;
+    background:var(--accent);transform:translate(-50%,-50%);
+    opacity:0;transition:opacity .3s ease;box-shadow:0 0 12px rgba(var(--accent-rgb),.8);
+  }
+  .track:hover .knob,.track:focus-visible .knob{opacity:1}
+
+  .tracks{
+    position:relative;list-style:none;margin:clamp(20px,4vh,32px) 0 0;
+    padding:0 14px 0 0;border-top:1px solid var(--line);
+    max-height:min(56vh,520px);overflow-y:auto;overscroll-behavior:contain;
+    scrollbar-width:thin;scrollbar-color:rgba(var(--accent-rgb),.45) transparent;
+  }
+  .tracks.scrollable{
+    -webkit-mask:linear-gradient(#000 0,#000 calc(100% - 30px),transparent 100%);
+            mask:linear-gradient(#000 0,#000 calc(100% - 30px),transparent 100%);
+  }
+  .tracks::-webkit-scrollbar{width:6px}
+  .tracks::-webkit-scrollbar-track{background:rgba(245,241,234,.06)}
+  .tracks::-webkit-scrollbar-thumb{background:rgba(var(--accent-rgb),.42);border-radius:3px}
+  .tracks::-webkit-scrollbar-thumb:hover{background:rgba(var(--accent-rgb),.75)}
+  .tracks li{border-bottom:1px solid var(--line)}
+  .trow{
+    position:relative;display:grid;grid-template-columns:42px 1fr auto;align-items:center;
+    gap:clamp(10px,2.5vw,20px);width:100%;padding:15px 2px;
+    background:none;border:0;color:var(--ink);text-align:left;cursor:pointer;
+    font-family:var(--sans);font-weight:300;overflow:hidden;
+    transition:padding-left .45s var(--ease),color .35s ease;
+  }
+  .trow::before{
+    content:"";position:absolute;left:0;top:0;bottom:0;width:0;
+    background:linear-gradient(90deg,rgba(var(--accent-rgb),.14),transparent);
+    transition:width .55s var(--ease);
+  }
+  .trow:hover{padding-left:16px;color:var(--accent)}
+  .trow:hover::before{width:100%}
+  .trow:disabled{cursor:not-allowed}
+  .trow .tn{font-size:.72rem;color:var(--muted);font-variant-numeric:tabular-nums;position:relative}
+  .trow .tt{font-family:var(--display);font-size:clamp(.98rem,1.9vw,1.18rem);letter-spacing:-.01em;min-width:0;position:relative}
+  .trow .ta{font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);text-align:right;position:relative}
+  .trow[aria-current="true"] .tt,.trow[aria-current="true"] .tn{color:var(--accent)}
+  .trow[aria-current="true"] .ta{color:var(--accent);opacity:.75}
+  .trow .missing{color:#d98a6a;letter-spacing:.14em}
+  .hint{margin-top:16px;font-size:.82rem;color:var(--muted);max-width:62ch}
+
+  /* ============ closing ============ */
+  .closing-line{
+    font-family:var(--display);font-weight:400;font-size:clamp(1.3rem,3.4vw,2.35rem);
+    line-height:1.32;letter-spacing:-.015em;max-width:40ch;
+    margin:clamp(38px,7vh,72px) 0 0;text-wrap:pretty;
+  }
+  .closing-line strong{font-weight:600;font-style:italic;color:var(--accent)}
+
+  /* ============ links ============ */
+  .links{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:1px;background:var(--line);margin-top:clamp(30px,6vh,56px);border:1px solid var(--line);
+  }
+  .link{
+    position:relative;display:flex;align-items:center;justify-content:space-between;
+    gap:18px;padding:clamp(20px,3.4vw,32px);background:var(--bg);
+    color:var(--ink);text-decoration:none;overflow:hidden;
+    transition:color .45s ease;
+  }
+  .link::before{
+    content:"";position:absolute;inset:0;background:var(--accent);
+    transform:translateX(-101%);transition:transform .55s var(--ease);z-index:0;
+  }
+  .link:hover::before,.link:focus-visible::before{transform:none}
+  .link>*{position:relative;z-index:1}
+  .link:hover,.link:focus-visible{color:var(--on-accent);outline:none}
+  .link .lk-label{
+    display:block;font-size:.68rem;letter-spacing:.26em;text-transform:uppercase;
+    color:var(--muted);transition:color .45s ease;
+  }
+  .link:hover .lk-label,.link:focus-visible .lk-label{color:var(--on-accent);opacity:.75}
+  .link .lk-value{
+    display:block;font-family:var(--display);font-weight:500;
+    font-size:clamp(1.05rem,2.4vw,1.5rem);letter-spacing:-.01em;margin-top:6px;word-break:break-all;
+  }
+  .link .lk-handle{
+    display:block;font-size:.76rem;letter-spacing:.06em;color:var(--muted);
+    margin-top:4px;transition:color .45s ease;
+  }
+  .link:hover .lk-handle,.link:focus-visible .lk-handle{color:var(--on-accent);opacity:.8}
+  .link .lk-arrow{flex:0 0 auto;font-size:1.15rem;transition:transform .5s var(--ease)}
+  .link:hover .lk-arrow,.link:focus-visible .lk-arrow{transform:translateX(8px)}
+
+  footer{
+    position:relative;z-index:1;border-top:1px solid var(--line);
+    padding:clamp(28px,5vh,44px) 0 clamp(34px,6vh,56px);
+    display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;
+    font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);
+  }
+
+  /* ============ reveal ============ */
+  .reveal{
+    opacity:0;transform:translateY(30px);filter:blur(8px);
+    transition:opacity 1s var(--ease),transform 1s var(--ease),filter 1s var(--ease);
+  }
+  .reveal.in{opacity:1;transform:none;filter:none}
+
+  /* ============ motion preferences ============ */
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    *{animation:none!important;transition:none!important}
+    .reveal{opacity:1;transform:none;filter:none}
+    .name .ch{transform:none}
+    .veil,.grain,.aurora,.pointer-light,.vignette,#dust{display:none}
+    .pin-track{height:auto}
+    .pin-sticky{position:static;height:auto;display:block}
+    .pin-stage{display:block;min-height:0}
+    .pin-text{opacity:1;transform:none;filter:none}
+    .section-head::after{width:100%}
+        .rail{display:none}
+  }
+
+  @media (max-width:620px){
+    .hero-mark{font-size:clamp(10rem,30vw,26rem)}
+    .rail{display:none}
+    .pointer-light{display:none}
+  }
+</style>
+</head>
+<body>
+
+<div class="pointer-light" id="plight" aria-hidden="true"></div>
+<div class="aurora" aria-hidden="true"></div>
+<div class="vignette" aria-hidden="true"></div>
+<canvas id="dust" aria-hidden="true"></canvas>
+<div class="grain" aria-hidden="true"></div>
+<div class="progress" id="progress" aria-hidden="true"></div>
+
+<div class="veil" id="veil" aria-hidden="true">
+  <span class="half l"></span><span class="half r"></span><span class="seam"></span>
+</div>
+
+<nav class="rail" id="rail" aria-label="Sections"></nav>
+
+<header class="hero">
+  <span class="hero-mark" id="heroMark" aria-hidden="true"></span>
+  <div class="wrap">
+    <p class="eyebrow" id="eyebrow">Personal · Motivation</p>
+    <div class="name-wrap">
+      <h1 class="name" id="name" aria-label="Your Name"></h1>
+      <span class="sweep" aria-hidden="true"></span>
+    </div>
+    <p class="tagline" id="tagline"></p>
+    <div class="chips" id="chips"></div>
+    <div class="quick" id="quick"></div>
+    <div class="hero-foot"><span class="scroll-cue">Scroll</span></div>
+  </div>
+</header>
+
+<main>
+  <section id="quotes" class="pinned">
+    <div class="wrap" style="padding-block:clamp(72px,14vh,150px)">
+      <div class="section-head reveal">
+        <h2 id="quotesTitle">Words I Live By</h2>
+              </div>
+              <p class="lead reveal" id="quotesLead"></p>
+    </div>
+    <div class="pin-track" id="quoteTrack">
+      <div class="pin-sticky" id="quoteSticky">
+        <div class="wrap">
+          <blockquote class="pin-stage" id="quoteStage"><p id="quoteText" class="pin-text"></p></blockquote>
+          <div class="pin-meter" aria-hidden="true"><span id="qFill"></span></div>
+          <div class="pin-count">
+                      <span id="qIdx">01</span><span class="q-sep">/</span><span id="qTotal">05</span>
+                      <button class="skip" id="quoteSkip" type="button">Skip the lines</button>
+                    </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="songs" style="padding-top:clamp(40px,8vh,90px)">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <h2 id="songsTitle">My Soundtrack</h2>
+              </div>
+              <p class="lead reveal" id="songsLead"></p>
+
+      <div class="player reveal" id="player">
+        <div class="player-top">
+          <div class="np">
+            <div class="disc" id="disc" aria-hidden="true"><span class="disc-ring"></span><span class="disc-core"></span></div>
+            <div class="np-meta">
+              <span class="np-title" id="npTitle">No track loaded</span>
+              <span class="np-artist" id="npArtist">Add your songs</span>
+            </div>
+          </div>
+          <div class="controls">
+            <button class="ctl" id="prev" aria-label="Previous track">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h2v14H6zm3 7l9-6v12z"/></svg>
+            </button>
+            <button class="ctl play" id="toggle" aria-label="Play">
+              <svg id="icoPlay" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l11 7-11 7z"/></svg>
+              <svg id="icoPause" viewBox="0 0 24 24" aria-hidden="true" style="display:none"><path d="M7 5h3.4v14H7zm6.6 0H17v14h-3.4z"/></svg>
+            </button>
+            <button class="ctl" id="next" aria-label="Next track">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 5h2v14h-2zM15 12L6 18V6z"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="seek">
+                  <span id="tCur">0:00</span>
+                  <button class="track" id="seek" aria-label="Seek">
+                    <span class="fill" id="fill"></span><span class="knob" id="knob"></span>
+                  </button>
+                  <span id="tDur">0:00</span>
+                </div>
+                <div class="yt-wrap" id="ytWrap" hidden></div>
+      </div>
+
+      <ol class="tracks reveal" id="tracks"></ol>
+      <p class="hint reveal" id="songHint"></p>
+      <audio id="audio" preload="metadata"></audio>
+    </div>
+  </section>
+
+  <section id="closing">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <h2 id="closingTitle">And Now</h2>
+        </div>
+        <p class="lead reveal" id="closingLead"></p>
+        <div class="story-list" id="storyList"></div>
+        <p class="closing-line reveal" id="closingLine"></p>
+      </div>
+    </section>
+
+  <section id="follow">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <h2 id="followTitle">Find Me</h2>
+              </div>
+              <p class="lead reveal" id="followLead"></p>
+      <div class="links reveal" id="links"></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap" style="display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap">
+    <span id="footLeft"></span>
+    <span id="footRight"></span>
+  </div>
+</footer>
+
+<script src="content.js"></script>
+
+<script>
+/* =====================  ENGINE — no need to edit  ===================== */
+(function () {
+  const CONTENT = window.CONTENT;
+  if (!CONTENT || typeof CONTENT !== 'object') {
+    document.body.innerHTML =
+      '<div style="font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#000;' +
+      'color:#f5f1ea;min-height:100vh;display:grid;place-items:center;padding:32px;' +
+      'line-height:1.75;font-size:15px"><div style="max-width:46ch">' +
+      '<b style="color:#e9a340;font-size:17px">content.js ঠিকভাবে পড়া যাচ্ছে না।</b><br><br>' +
+      'content.js ফাইলে সাধারণত এই দুইটা ভুল হয়:<br>' +
+      '&nbsp;&nbsp;• কোনো লাইনের শেষে <b>কমা (,)</b> লাগাতে ভুলে গেছেন<br>' +
+      '&nbsp;&nbsp;• <b>কোটেশন (&quot; &quot;)</b> — এক দিলে দুই দিতে হয়<br><br>' +
+      'সহজ সমাধান: ফাইলের লেখাটা মুছে দিয়ে <b>READ-ME-FIRST.txt</b> ফাইলের ' +
+      'নমুনা দেখে আবার বসান।' +
+      '</div></div>';
+    return;
+  }
+
+  const $ = id => document.getElementById(id);
+
+  /* ---------- theme (রঙ) — content.js থেকে আসে ---------- */
+  (function applyTheme () {
+    const named = CONTENT.themes && CONTENT.themes[CONTENT.theme];
+    const t = (named && typeof named === 'object') ? named
+            : (typeof CONTENT.theme === 'object' ? CONTENT.theme : null);
+    if (!t || !t.accent) return;
+    const s = document.documentElement.style;
+    const aRgb = t.accentRgb || '210,65,60';
+    const eRgb = t.emberRgb || aRgb;
+    s.setProperty('--accent', t.accent);
+    s.setProperty('--accent-rgb', aRgb);
+    s.setProperty('--ember', t.ember || t.accent);
+    s.setProperty('--ember-rgb', eRgb);
+    s.setProperty('--accent-hi', t.hi || t.accent);
+    s.setProperty('--on-accent', t.on || '#000000');
+    s.setProperty('--accent-soft', 'rgba(' + aRgb + ',.18)');
+  })();
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const fine = window.matchMedia('(pointer: fine)').matches;
+  const PAD = n => String(n).padStart(2, '0');
+
+  /* ---------- text wiring ---------- */
+  document.title = CONTENT.name + " · Story";
+  $('eyebrow').textContent = CONTENT.eyebrow;
+  $('tagline').innerHTML = CONTENT.tagline;
+  $('footLeft').textContent = CONTENT.footLeft;
+  $('footRight').textContent = CONTENT.footRight;
+  $('quotesTitle').textContent = CONTENT.quotesTitle;
+  $('songsTitle').textContent = CONTENT.songsTitle;
+  $('closingTitle').textContent = CONTENT.closingTitle;
+  $('followTitle').textContent = CONTENT.followTitle;
+
+  /* ---------- playerMode: "hidden" হলে প্লেয়ার + তালিকা সরিয়ে দাও ---------- */
+  const mode = String(CONTENT.playerMode || 'visible');
+  const bgMusic = (mode === 'hidden' || mode === 'list');
+  if (mode === 'hidden') {                      // কিছুই দেখাবে না
+    const sec = document.getElementById('songs');
+    if (sec) sec.remove();
+  }
+  if (mode === 'list') {                        // তালিকা থাকবে, প্লেয়ার/ভিডিও নেই
+    const pl = document.getElementById('player');
+    if (pl) pl.remove();
+  }
+
+  /* ---------- name: split + staggered rise ---------- */
+  const nameEl = $('name');
+  nameEl.setAttribute('aria-label', CONTENT.name);
+  const words = String(CONTENT.name).split(' ');
+  let i = 0;
+  words.forEach((word, wi) => {
+    const ln = document.createElement('span');
+    ln.className = 'ln';
+    [...word].forEach(chr => {
+      const s = document.createElement('span');
+      s.className = 'ch';
+      s.textContent = chr;
+      s.style.animationDelay = (0.75 + i * 0.045) + 's';
+      ln.appendChild(s);
+      i++;
+    });
+    nameEl.appendChild(ln);
+    if (wi < words.length - 1) { nameEl.appendChild(document.createElement('br')); i += 2; }
+  });
+
+  /* ---------- hero extras: watermark, chips, section leads ---------- */
+  const markEl = $('heroMark');
+  if (markEl) {
+    markEl.textContent = String(CONTENT.name).split(/\s+/)
+      .map(w => w.charAt(0)).join('').slice(0, 2).toUpperCase();
+  }
+
+  const chipsEl = $('chips');
+  (CONTENT.chips || []).forEach(c => {
+    const s = document.createElement('span');
+    s.className = 'chip';
+    s.textContent = c;
+    chipsEl.appendChild(s);
+  });
+  if (!chipsEl.children.length) chipsEl.remove();
+
+  const leads = CONTENT.leads || {};
+  ['quotes', 'songs', 'closing', 'follow'].forEach(k => {
+    const el = $(k + 'Lead');
+    if (el) el.textContent = leads[k] || '';
+  });
+
+  /* ---------- And Now — story (plain list) ---------- */
+  const storyEl = $('storyList');
+  (Array.isArray(CONTENT.story) ? CONTENT.story : []).forEach((s, n) => {
+    const item = document.createElement('article');
+    item.className = 'story-item reveal';
+    item.style.transitionDelay = Math.min(n, 3) * 70 + 'ms';
+    if (s.title) {
+      const h = document.createElement('h3');
+      h.textContent = s.title;
+      item.appendChild(h);
+    }
+    const para = document.createElement('p');
+    para.textContent = s.text || '';
+    item.appendChild(para);
+    storyEl.appendChild(item);
+  });
+  if (!storyEl.children.length) storyEl.remove();
+
+  /* ---------- closing ---------- */
+  const closingEl = $('closingLine');
+  String(CONTENT.closing).split(/(<strong>.*?<\/strong>)/g).forEach(bit => {
+    const m = bit.match(/^<strong>(.*)<\/strong>$/);
+    if (m) { const s = document.createElement('strong'); s.textContent = m[1]; closingEl.appendChild(s); }
+    else if (bit) closingEl.appendChild(document.createTextNode(bit));
+  });
+
+  /* ---------- links ---------- */
+  const linksEl = $('links');
+  (CONTENT.links || []).forEach(l => {
+    const a = document.createElement('a');
+    a.className = 'link';
+    a.href = l.href || '#';
+    if (l.href && l.href !== '#') { a.target = '_blank'; a.rel = 'noopener'; }
+    const box = document.createElement('span');
+    const lab = document.createElement('span'); lab.className = 'lk-label'; lab.textContent = l.label || 'Link';
+    const val = document.createElement('span'); val.className = 'lk-value'; val.textContent = l.name || l.value || '';
+    box.append(lab, val);
+    if (l.handle) {
+      const h = document.createElement('span'); h.className = 'lk-handle'; h.textContent = l.handle;
+      box.appendChild(h);
+    }
+    const ar = document.createElement('span'); ar.className = 'lk-arrow'; ar.setAttribute('aria-hidden', 'true'); ar.textContent = '\u2192';
+    a.append(box, ar);
+    linksEl.appendChild(a);
+  });
+
+  /* ---------- pinned sections: scroll-driven (motivation + story) ---------- */
+  function makePinned (cfg) {
+    const items = cfg.items || [];
+    const track = $(cfg.track), sticky = $(cfg.sticky), stage = $(cfg.stage);
+    const textEl = $(cfg.text), idxEl = $(cfg.idx), totalEl = $(cfg.total), fillEl = $(cfg.fill);
+    const box = stage.parentElement;
+    const meter = box ? box.querySelector('.pin-meter') : null;
+    const count = box ? box.querySelector('.pin-count') : null;
+
+    if (!items.length) { track.remove(); return; }
+    totalEl.textContent = PAD(items.length);
+
+    if (reduce) {
+      track.style.height = 'auto';
+      sticky.style.position = 'static';
+      sticky.style.height = 'auto';
+      stage.style.display = 'block';
+      stage.style.minHeight = '0';
+      if (meter) meter.remove();
+      if (count) count.remove();
+      textEl.remove();
+      items.forEach(it => {
+        const el = document.createElement('p');
+        el.style.cssText = cfg.plainCss || '';
+        if (cfg.plain) cfg.plain(el, it);
+        else el.textContent = (typeof it === 'string' ? it : (it.text || ''));
+        stage.appendChild(el);
+      });
+      return;
+    }
+
+    const per = Math.min(Math.max(Number(cfg.scroll) || 60, 25), 120);
+    track.style.setProperty('--nq', String(items.length));
+    track.style.height = 'min(' + (items.length * per) + 'svh, ' + (per * 7) + 'svh)';
+
+    let cur = -1;
+    function show (n) {
+      if (n === cur) return;
+      cur = n;
+      textEl.classList.remove('in');
+      setTimeout(() => {
+        cfg.render(textEl, items[n], n);
+        textEl.classList.add('in');
+      }, 220);
+      idxEl.textContent = PAD(n + 1);
+      fillEl.style.width = (((n + 1) / items.length) * 100) + '%';
+    }
+
+    let ticking = false;
+    function update () {
+      ticking = false;
+      const r = track.getBoundingClientRect();
+      const span = r.height - window.innerHeight;
+      const p2 = span > 0 ? (-r.top / span) : 0;
+      show(Math.min(items.length - 1, Math.floor(Math.max(0, Math.min(1, p2)) * items.length)));
+    }
+    const onScroll = () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    update();
+  }
+
+  const plainQuoteCss = 'font-family:var(--display);font-weight:300;' +
+    'font-size:clamp(1.2rem,3.2vw,2.3rem);line-height:1.34;' +
+    'letter-spacing:-.015em;margin:0 0 .85em;max-width:30ch;';
+
+  // 01 · motivation লাইন
+  makePinned({
+    items: Array.isArray(CONTENT.quotes) ? CONTENT.quotes : [],
+    track: 'quoteTrack', sticky: 'quoteSticky', stage: 'quoteStage',
+    text: 'quoteText', idx: 'qIdx', total: 'qTotal', fill: 'qFill',
+    scroll: CONTENT.quoteScroll, plainCss: plainQuoteCss,
+    render: (el, item) => { el.textContent = item; }
+  });
+
+  /* ---------- soundtrack ---------- */
+  (function soundtrack () {
+    const allSongs = Array.isArray(CONTENT.songs) ? CONTENT.songs.slice() : [];
+
+    /* ===== hidden মোড: কিছুই দেখাবে না, শুধু গান বাজবে =====
+       (YouTube-এর গান এভাবে চলবে না — শুধু ফাইল / সরাসরি অডিও লিংক) */
+    if (mode === 'hidden' || !$('songs')) {
+      const list = allSongs.filter(s => s && s.src && !/youtu/i.test(s.src));
+      if (!list.length) return;
+
+      const au = document.createElement('audio');
+      au.id = 'bgAudio';
+      au.preload = 'auto';
+      au.volume = Math.min(Math.max(Number(CONTENT.musicVolume) || 0.45, 0), 1);
+      au.style.display = 'none';
+      document.body.appendChild(au);
+
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'music-toggle';
+      btn.setAttribute('aria-label', 'Play music');
+      const sp = document.createElement('span');
+      sp.textContent = '\u266A';
+      btn.appendChild(sp);
+      btn.addEventListener('pointerdown', e => e.stopPropagation());
+      document.body.appendChild(btn);
+
+      let bi = 0, started = false;
+      const load = n => { bi = ((n % list.length) + list.length) % list.length; au.src = list[bi].src; };
+      function paint () {
+        const on = !au.paused && !au.ended;
+        btn.classList.toggle('on', on);
+        btn.setAttribute('aria-label', on ? 'Pause music' : 'Play music');
+      }
+      function start () {
+        if (started) return;
+        started = true;
+        load(0);
+        au.play().catch(() => {});
+      }
+      btn.addEventListener('click', () => {
+        if (!started) { start(); return; }
+        if (au.paused) au.play().catch(() => {}); else au.pause();
+      });
+      au.addEventListener('play', paint);
+      au.addEventListener('pause', paint);
+      au.addEventListener('ended', () => { load(bi + 1); au.play().catch(() => {}); });
+
+      // ব্রাউজারের নিয়ম: ইউজার একবার ক্লিক/ট্যাপ না করলে শব্দ চালু হয় না
+      function onFirst () {
+        document.removeEventListener('pointerdown', onFirst);
+        document.removeEventListener('keydown', onFirst);
+        start();
+      }
+      document.addEventListener('pointerdown', onFirst, { passive: true });
+      document.addEventListener('keydown', onFirst);
+      paint();
+      return;
+    }
+
+    /* ===== list মোড: তালিকা থাকবে, প্লেয়ার বা ভিডিও কিছুই দেখাবে না ===== */
+    if (mode === 'list' && $('tracks')) {
+      const list = allSongs.filter(s => s && s.src && !/youtu/i.test(s.src));
+      const listEl = $('tracks'), hintEl = $('songHint');
+      if (!list.length) {
+        if (listEl) listEl.remove();
+        if (hintEl) hintEl.textContent = 'কোনো গান পাওয়া যায়নি। songs/ ফোল্ডারে mp3 রাখুন, বা সরাসরি অডিও লিংক দিন।';
+        return;
+      }
+
+      const au = document.createElement('audio');
+      au.id = 'bgAudio';
+      au.preload = 'auto';
+      au.volume = Math.min(Math.max(Number(CONTENT.musicVolume) || 0.45, 0), 1);
+      au.style.display = 'none';
+      document.body.appendChild(au);
+
+      let ci = -1;
+      const rows = [];
+      const mark = () => rows.forEach((r, k) => r.setAttribute('aria-current', k === ci ? 'true' : 'false'));
+
+      list.forEach((s, i) => {
+        const li = document.createElement('li');
+        const b = document.createElement('button');
+        b.className = 'trow';
+        b.setAttribute('aria-current', 'false');
+        const tn = document.createElement('span'); tn.className = 'tn'; tn.textContent = PAD(i + 1);
+        const tt = document.createElement('span'); tt.className = 'tt'; tt.textContent = s.title || 'Untitled';
+        const ta = document.createElement('span'); ta.className = 'ta'; ta.textContent = s.artist || '—';
+        b.append(tn, tt, ta);
+        b.addEventListener('click', () => {
+          if (i === ci) { if (au.paused) au.play().catch(() => {}); else au.pause(); return; }
+          ci = i; au.src = s.src; au.play().catch(() => {}); mark();
+        });
+        li.appendChild(b); listEl.appendChild(li); rows.push(b);
+      });
+
+      // ♪ লোগো/বাটন — চাপ দিলে গান থামবে/চলবে
+      const mbtn = document.createElement('button');
+      mbtn.type = 'button';
+      mbtn.className = 'music-toggle';
+      mbtn.setAttribute('aria-label', 'Play music');
+      const msp = document.createElement('span');
+      msp.textContent = '\u266A';
+      mbtn.appendChild(msp);
+      mbtn.addEventListener('pointerdown', e => e.stopPropagation());
+      document.body.appendChild(mbtn);
+      function paintBtn () {
+        const on = !au.paused && !au.ended;
+        mbtn.classList.toggle('on', on);
+        mbtn.setAttribute('aria-label', on ? 'Pause music' : 'Play music');
+      }
+      mbtn.addEventListener('click', () => {
+        if (au.paused) {
+          if (ci < 0) { ci = 0; au.src = list[0].src; }
+          au.play().catch(() => {});
+          mark();
+        } else au.pause();
+      });
+      au.addEventListener('play', paintBtn);
+      au.addEventListener('pause', paintBtn);
+      paintBtn();
+
+      if (listEl.scrollHeight > listEl.clientHeight + 4) listEl.classList.add('scrollable');
+      if (hintEl) hintEl.textContent = 'গানের নামে চাপ দিলেই বাজবে — থামাতে আবার চাপুন।'
+        + (allSongs.length > list.length ? '  (YouTube-এর গান এই মোডে বাদ পড়েছে।)' : '');
+
+      au.addEventListener('ended', () => {
+        ci = (ci + 1) % list.length; au.src = list[ci].src; au.play().catch(() => {}); mark();
+      });
+      au.addEventListener('error', () => {
+        const r = rows[ci]; if (!r) return;
+        const ta = r.querySelector('.ta');
+        if (ta) { ta.classList.add('missing'); ta.textContent = 'file missing'; }
+      });
+      return;
+    }
+
+    const songs = allSongs;
+    const player = $('player'), audio = $('audio'), disc = $('disc');
+    const npTitle = $('npTitle'), npArtist = $('npArtist');
+    const btnToggle = $('toggle'), btnPrev = $('prev'), btnNext = $('next');
+    const icoPlay = $('icoPlay'), icoPause = $('icoPause');
+    const fill = $('fill'), knob = $('knob'), seekEl = $('seek');
+    const tCur = $('tCur'), tDur = $('tDur');
+    const listEl = $('tracks'), hintEl = $('songHint'), ytWrap = $('ytWrap');
+
+    let si = -1;
+    const rows = [];
+    const playing = () => !audio.paused && !audio.ended;
+    const fmt = t => (!isFinite(t) || t < 0) ? '0:00'
+      : Math.floor(t / 60) + ':' + String(Math.floor(t % 60)).padStart(2, '0');
+
+    function paint () {
+      icoPlay.style.display = playing() ? 'none' : '';
+      icoPause.style.display = playing() ? '' : 'none';
+      player.classList.toggle('playing', playing());
+      btnToggle.setAttribute('aria-label', playing() ? 'Pause' : 'Play');
+    }
+
+    // YouTube লিংক থেকে ভিডিও আইডি বের করা
+    function ytId (v) {
+      const t = String(v == null ? '' : v).trim();
+      const m = t.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/);
+      if (m) return m[1];
+      return /^[A-Za-z0-9_-]{11}$/.test(t) ? t : '';
+    }
+
+    function select (n) {
+      if (!songs.length) return;
+      si = ((n % songs.length) + songs.length) % songs.length;
+      const s = songs[si];
+      const vid = ytId(s.youtube || s.yt || s.video || (/youtu/.test(s.src || '') ? s.src : ''));
+      npTitle.textContent = s.title || 'Untitled';
+      npArtist.textContent = s.artist || '—';
+      fill.style.width = '0%'; knob.style.left = '0%';
+      disc.style.setProperty('--p', '0');
+      tCur.textContent = '0:00'; tDur.textContent = '0:00';
+      rows.forEach((r, k) => r.setAttribute('aria-current', k === si ? 'true' : 'false'));
+      const r = rows[si];
+            if (r) { const bad = r.querySelector('.missing'); if (bad) bad.remove(); }
+
+      if (vid) {                                  // --- YouTube মোড ---
+        audio.pause();
+        audio.removeAttribute('src');
+        player.classList.add('yt');
+        ytWrap.innerHTML = '';
+        const watch = 'https://www.youtube.com/watch?v=' + vid;
+        if (location.protocol === 'file:') {
+          // file:// থেকে YouTube embed কাজ করে না (YouTube এখন referrer চায়)।
+          // তাই থাম্বনেইল কার্ড — চাপ দিলে YouTube-এ খুলবে।
+          const a = document.createElement('a');
+          a.className = 'yt-card';
+          a.href = watch; a.target = '_blank'; a.rel = 'noopener';
+          const pl = document.createElement('span');
+          pl.className = 'yt-play'; pl.textContent = '\u25B6';
+          a.append(pl);
+          ytWrap.appendChild(a);
+          npArtist.textContent = s.artist || '—';
+        } else {
+          const f = document.createElement('iframe');
+          f.src = 'https://www.youtube.com/embed/' + vid + '?rel=0&origin=' + encodeURIComponent(location.origin);
+          f.title = s.title || 'YouTube';
+          f.referrerPolicy = 'strict-origin-when-cross-origin';
+          f.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
+          f.setAttribute('allowfullscreen', '');
+          f.setAttribute('loading', 'lazy');
+          ytWrap.appendChild(f);
+          npArtist.textContent = s.artist || '—';
+        }
+        ytWrap.hidden = false;
+      } else {                                      // --- অডিও মোড ---
+        player.classList.remove('yt');
+        ytWrap.hidden = true;
+        ytWrap.innerHTML = '';
+        audio.src = s.src;
+      }
+      paint();
+            // গান বদলালে তালিকার ভেতরে সেই লাইনটা চোখের সামনে নিয়ে আসো
+            if (r && listEl.scrollHeight > listEl.clientHeight + 4) {
+              listEl.scrollTo({
+                top: r.offsetTop - listEl.clientHeight / 2 + r.offsetHeight / 2,
+                behavior: reduce ? 'auto' : 'smooth'
+              });
+            }
+    }
+
+    const play = () => { if (player.classList.contains('yt')) return; audio.play().catch(() => {}); };
+
+    if (!songs.length) {
+      btnToggle.disabled = btnPrev.disabled = btnNext.disabled = seekEl.disabled = true;
+      npTitle.textContent = 'No song added yet';
+      npArtist.textContent = 'songs/ folder';
+      hintEl.textContent = 'এখনো কোনো song যোগ করা হয়নি। songs/ ফোল্ডারে mp3 ফাইল রাখুন, তারপর content.js ফাইলে songs তালিকায় নাম লিখুন।';
+    } else {
+      songs.forEach((s, n) => {
+        const li = document.createElement('li');
+        const b = document.createElement('button');
+        b.className = 'trow';
+        b.setAttribute('aria-current', 'false');
+        const tn = document.createElement('span'); tn.className = 'tn'; tn.textContent = PAD(n + 1);
+        const tt = document.createElement('span'); tt.className = 'tt'; tt.textContent = s.title || 'Untitled';
+        const ta = document.createElement('span'); ta.className = 'ta'; ta.textContent = s.artist || '—';
+        b.append(tn, tt, ta);
+        b.addEventListener('click', () => {
+          if (n === si) { playing() ? audio.pause() : play(); }
+          else { select(n); play(); }
+        });
+        li.appendChild(b); listEl.appendChild(li); rows.push(b);
+      });
+      hintEl.textContent = 'নিজের গান যোগ করতে: mp3 ফাইলগুলো songs/ ফোল্ডারে রাখুন, তারপর content.js ফাইলে songs তালিকায় নাম লিখুন।';
+            select(0);
+            // তালিকা লম্বা হলে স্ক্রলযোগ্য করে দাও
+            if (listEl.scrollHeight > listEl.clientHeight + 4) {
+              listEl.classList.add('scrollable');
+              hintEl.textContent += ' উপরে-নিচে স্ক্রল করলে বাকি গানগুলো দেখতে পাবেন।';
+            }
+    }
+
+    btnToggle.addEventListener('click', () => { playing() ? audio.pause() : play(); });
+    btnPrev.addEventListener('click', () => { select(si - 1); play(); });
+    btnNext.addEventListener('click', () => { select(si + 1); play(); });
+
+    audio.addEventListener('play', paint);
+    audio.addEventListener('pause', paint);
+    audio.addEventListener('loadedmetadata', () => { tDur.textContent = fmt(audio.duration); });
+    audio.addEventListener('timeupdate', () => {
+      const d = audio.duration;
+      if (isFinite(d) && d > 0) {
+        const p = audio.currentTime / d;
+        fill.style.width = (p * 100) + '%';
+        knob.style.left = (p * 100) + '%';
+        disc.style.setProperty('--p', p.toFixed(4));
+        tCur.textContent = fmt(audio.currentTime);
+      }
+    });
+    audio.addEventListener('ended', () => {
+      if (songs.length > 1) { select(si + 1); play(); } else paint();
+    });
+    audio.addEventListener('error', () => {
+      if (player.classList.contains('yt')) return;
+      const r = rows[si]; if (!r) return;
+      const ta = r.querySelector('.ta');
+      if (ta) { ta.classList.add('missing'); ta.textContent = 'file missing'; }
+      npArtist.textContent = 'file missing — check the songs/ folder';
+      paint();
+    });
+
+    seekEl.addEventListener('click', e => {
+      const d = audio.duration;
+      if (!isFinite(d) || d <= 0) return;
+      const rect = seekEl.getBoundingClientRect();
+      audio.currentTime = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width)) * d;
+    });
+  })();
+
+  /* ---------- rail nav ---------- */
+  const rail = $('rail');
+  const railTargets = [
+    ['quotes', CONTENT.quotesTitle], ['songs', CONTENT.songsTitle],
+    ['closing', CONTENT.closingTitle], ['follow', CONTENT.followTitle]
+  ].filter(t => document.getElementById(t[0]));
+  const railBtns = railTargets.map(([id, label]) => {
+    const b = document.createElement('button');
+    const sp = document.createElement('span');
+    sp.textContent = label || id;
+    b.appendChild(sp);
+    b.setAttribute('aria-label', label || id);
+    b.addEventListener('click', () => {
+      document.getElementById(id).scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+    });
+    rail.appendChild(b);
+    return b;
+  });
+
+  /* ---------- hero quick-jump ---------- */
+  const quickEl = $('quick');
+  railTargets.forEach(([id, label]) => {
+    const b = document.createElement('button');
+    b.className = 'qjump';
+    b.textContent = label || id;
+    b.addEventListener('click', () => {
+      document.getElementById(id).scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+    });
+    quickEl.appendChild(b);
+  });
+  if (!quickEl.children.length) quickEl.remove();
+
+  /* ---------- motivation: "Skip" বাটন ---------- */
+  const skipBtn = $('quoteSkip');
+  if (skipBtn) {
+    skipBtn.textContent = CONTENT.skipLabel || 'Skip';
+    skipBtn.addEventListener('click', () => {
+      const next = document.getElementById('songs');
+      if (next) next.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+    });
+  }
+
+  /* ---------- scroll: progress, parallax, rail state ---------- */
+  const bar = $('progress');
+  let ticking = false;
+  function onScroll () {
+    ticking = false;
+    const y = window.scrollY;
+    const vh = window.innerHeight;
+
+    const total = document.documentElement.scrollHeight - vh;
+    bar.style.width = (total > 0 ? (y / total) * 100 : 0) + '%';
+
+    if (!reduce && y < vh * 1.2) {
+      const k = y / vh;
+      nameEl.style.transform = 'translateY(' + (k * 46).toFixed(1) + 'px)';
+      nameEl.style.opacity = String(Math.max(0, 1 - k * 1.05));
+    }
+
+    const mid = y + vh * 0.4;
+    let active = 0;
+    railTargets.forEach(([id], k) => {
+      const el = document.getElementById(id);
+      if (el && el.offsetTop <= mid) active = k;
+    });
+    railBtns.forEach((b, k) => b.classList.toggle('on', k === active));
+  }
+  const scroller = () => { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } };
+  window.addEventListener('scroll', scroller, { passive: true });
+  window.addEventListener('resize', scroller);
+  onScroll();
+
+  /* ---------- reveal on scroll ---------- */
+  const targets = document.querySelectorAll('.reveal');
+  if (reduce || !('IntersectionObserver' in window)) {
+    targets.forEach(t => t.classList.add('in'));
+  } else {
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, { rootMargin: '0px 0px -12% 0px', threshold: 0.15 });
+    targets.forEach(t => io.observe(t));
+  }
+
+  /* ---------- touch / click burst ---------- */
+  if (!reduce) {
+    const layer = document.createElement('div');
+    layer.className = 'fx-layer';
+    layer.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(layer);
+    const COLORS = ['143,208,232', '255,157,107', '143,227,176', '232,201,143',
+                    '210,65,60', '255,255,255', '196,146,255'];
+    document.addEventListener('pointerdown', e => {
+      const c = COLORS[(Math.random() * COLORS.length) | 0];
+      const size = 52 + Math.random() * 36;
+      const d = document.createElement('span');
+      d.className = 'ripple';
+      d.style.setProperty('--c', c);
+      d.style.left = e.clientX + 'px';
+      d.style.top = e.clientY + 'px';
+      d.style.width = size + 'px';
+      d.style.height = size + 'px';
+      layer.appendChild(d);
+      setTimeout(() => d.remove(), 840);
+    }, { passive: true });
+  }
+
+  /* ---------- pointer light ---------- */
+  if (fine && !reduce) {
+    const pl = $('plight');
+    let px = window.innerWidth / 2, py = window.innerHeight / 2, cx = px, cy = py;
+    window.addEventListener('pointermove', e => { px = e.clientX; py = e.clientY; document.body.classList.add('pointer-on'); }, { passive: true });
+    window.addEventListener('pointerleave', () => document.body.classList.remove('pointer-on'));
+    (function follow () {
+      cx += (px - cx) * 0.08;
+      cy += (py - cy) * 0.08;
+      pl.style.transform = 'translate3d(' + cx.toFixed(1) + 'px,' + cy.toFixed(1) + 'px,0)';
+      requestAnimationFrame(follow);
+    })();
+  }
+
+  /* ---------- veil intro ---------- */
+  if (reduce) {
+    document.body.classList.add('ready');
+    const v = $('veil'); if (v) v.remove();
+  } else {
+    requestAnimationFrame(() => {
+      setTimeout(() => document.body.classList.add('ready'), 90);
+      setTimeout(() => { const v = $('veil'); if (v) v.remove(); }, 1500);
+    });
+  }
+
+  /* ---------- ambient dust ---------- */
+  if (!reduce) {
+    const cv = $('dust'), ctx = cv.getContext('2d');
+    const accentRgb = (getComputedStyle(document.documentElement)
+      .getPropertyValue('--accent-rgb') || '').trim() || '210,65,60';
+    let w, h, parts = [];
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+    function size () {
+      w = cv.width = innerWidth * dpr;
+      h = cv.height = innerHeight * dpr;
+      cv.style.width = innerWidth + 'px';
+      cv.style.height = innerHeight + 'px';
+      const count = Math.round(Math.min(80, innerWidth / 18));
+      parts = Array.from({ length: count }, () => ({
+        x: Math.random() * w, y: Math.random() * h,
+        r: (Math.random() * 1.5 + 0.3) * dpr,
+        vy: (Math.random() * 0.22 + 0.05) * dpr,
+        vx: (Math.random() - 0.5) * 0.12 * dpr,
+        a: Math.random() * 0.38 + 0.07,
+        p: Math.random() * Math.PI * 2
+      }));
+    }
+    function frame (t) {
+      ctx.clearRect(0, 0, w, h);
+      for (const p of parts) {
+        p.y -= p.vy;
+        p.x += p.vx + Math.sin((t / 2600) + p.p) * 0.15 * dpr;
+        if (p.y < -10) { p.y = h + 10; p.x = Math.random() * w; }
+        if (p.x < -10) p.x = w + 10;
+        if (p.x > w + 10) p.x = -10;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(' + accentRgb + ',' + p.a.toFixed(3) + ')';
+        ctx.fill();
+      }
+      requestAnimationFrame(frame);
+    }
+    size();
+    addEventListener('resize', size);
+    requestAnimationFrame(frame);
+  }
+})();
+</script>
+</body>
+</html>
