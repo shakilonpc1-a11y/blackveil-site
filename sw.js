@@ -9,7 +9,7 @@ const CORE = [
   './',
   './index.html',
   './content.js',
-  './manifest.webmanifest',
+  './manifest.json',
   './icon.png',
   './icon-192.png',
   './icon-512.png',
