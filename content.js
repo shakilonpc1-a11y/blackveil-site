@@ -33,12 +33,12 @@ window.CONTENT = {
      নিজের রঙ চাইলে theme: { accent:"#d2413c", accentRgb:"210,65,60",
                              ember:"#6e1414", emberRgb:"110,20,20",
                              hi:"#ff8f7a", on:"#150404" }  এভাবে লিখুন। */
-  theme: "crimson",
+  theme: "mono",
   themes: {
     crimson: { accent:"#d2413c", accentRgb:"210,65,60", ember:"#6e1414", emberRgb:"110,20,20", hi:"#ff8f7a", on:"#150404" },
     amber:   { accent:"#e9a340", accentRgb:"233,163,64", ember:"#b4551f", emberRgb:"180,85,31", hi:"#f8e0ab", on:"#120c04" },
     ice:     { accent:"#7fc4dd", accentRgb:"127,196,221", ember:"#1d5f7a", emberRgb:"29,95,122", hi:"#d6f2fb", on:"#04121a" },
-    mono:    { accent:"#d6d2ca", accentRgb:"214,210,202", ember:"#5c5852", emberRgb:"92,88,82", hi:"#ffffff", on:"#0b0b0b" }
+    mono:    { accent:"#cfd6dd", accentRgb:"207,214,221", ember:"#4a5158", emberRgb:"74,81,88", hi:"#ffffff", on:"#0a0c0e" }
   },
 
   /* ----- MOTIVATION সেকশনের স্ক্রল -----
@@ -149,9 +149,10 @@ window.CONTENT = {
        প্রতিটা লাইনে  handle: "@username"  যোগ করে দিলেই হবে। */
     followTitle: "Find Me",
   links: [
-      { label: "Telegram", name: "𝙎𝙃𝘼𝙆𝙄𝙇",   href: "https://t.me/S_H_AK_I_L" },
-      { label: "Channel",  name: "𝗕𝗹𝗮𝗰𝗸𝘃𝗲𝗶𝗹", href: "https://t.me/Blackveil_Night" }
-    ],
+        { label: "X",        name: "𝙎𝙃𝘼𝙆𝙄𝙇",   href: "https://x.com/ShakilOnX" },
+                { label: "Telegram", name: "𝙎𝙃𝘼𝙆𝙄𝙇",   href: "https://t.me/S_H_AK_I_L" },
+                { label: "Channel",  name: "𝗕𝗹𝗮𝗰𝗸𝘃𝗲𝗶𝗹", href: "https://t.me/Blackveil_Night", img: "blackveil-logo.jpg" }
+      ],
 
   /* ----- FOOTER ----- */
   footLeft: "© " + new Date().getFullYear() + " · Blackveil",
