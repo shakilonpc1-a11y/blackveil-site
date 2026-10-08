@@ -9,6 +9,7 @@
 <link rel="icon" href="favicon-32.png" sizes="32x32">
 <link rel="icon" href="icon.png" sizes="180x180">
 <link rel="apple-touch-icon" href="icon.png">
+<link rel="manifest" href="manifest.webmanifest">
 <meta name="description" content="Darkness isn’t evil. It’s honest.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Blackveil">
@@ -59,7 +60,14 @@
     border-bottom:1px solid var(--line);
   }
   .bar .col{display:flex;align-items:center;justify-content:space-between;height:58px;gap:20px}
-  .bar .mark{font-family:var(--serif);font-size:1.05rem;letter-spacing:.01em}
+  .bar .mark{font-family:var(--serif);font-size:1.05rem;letter-spacing:.01em;flex:0 0 auto}
+
+  /* ---------- live watch ---------- */
+  .clock{display:inline-flex;align-items:center;gap:9px;flex:0 0 auto;color:#cfd6dd}
+  .clock .dial{width:27px;height:27px;flex:0 0 auto}
+  .clock .dial line{transform-origin:20px 20px}
+  .clock b{font-family:var(--sans);font-weight:400;font-size:clamp(.58rem,.54rem + .12vw,.68rem);
+    letter-spacing:.14em;color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap}
   .bar nav{display:flex;gap:clamp(12px,2.4vw,28px)}
   .bar nav button{
     background:none;border:0;padding:4px 0;cursor:pointer;
@@ -194,39 +202,36 @@
   /* ---------- mobile ---------- */
     body{overflow-x:hidden}
     @media (max-width:760px){
-      body{padding-bottom:158px}
-      .sec .col{grid-template-columns:1fr;gap:14px}
-      .lbl{position:static}
-      .tr button{grid-template-columns:26px 1fr auto;gap:10px}
-      .tr .a{font-size:.56rem;letter-spacing:.10em}
-      .tr .t{font-size:1rem}
+          body{padding-bottom:156px}
+          .tr button{grid-template-columns:26px 1fr auto;gap:12px}
 
-      /* top bar — 4 nav items scroll sideways instead of squashing */
-      .bar .col{height:52px;gap:12px}
-      .bar .mark{font-size:.95rem;flex:0 0 auto}
-      .bar nav{gap:15px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;padding-block:4px}
-      .bar nav::-webkit-scrollbar{display:none}
-      .bar nav button{font-size:.6rem;letter-spacing:.13em;white-space:nowrap;flex:0 0 auto}
+          /* top bar — 4 nav items scroll sideways instead of squashing */
+          .bar .col{height:52px;gap:12px}
+                .bar .mark{font-size:.95rem;flex:0 0 auto}
+                .clock{gap:6px}
+                .clock .dial{width:22px;height:22px}
+          .bar nav{gap:15px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;padding-block:4px}
+          .bar nav::-webkit-scrollbar{display:none}
+          .bar nav button{letter-spacing:.13em;white-space:nowrap;flex:0 0 auto}
 
-      /* dock — seek bar gets its own full-width row, fat touch target */
-      .dock .col{height:auto;padding-block:11px;gap:10px;flex-wrap:wrap}
-      .disc{width:30px;height:30px}
-      .now b{font-size:.92rem;max-width:44vw}
-      .now i{font-size:.56rem;max-width:44vw}
-      .ctl button{width:36px;height:36px}
-      .seek{flex:1 1 100%;order:9;min-width:0;gap:8px}
-      .seek .t2{display:inline}
-      .track{height:36px}
-      .track::before{height:2px}
-      .fill{height:2px}
-      .knob{opacity:1;width:11px;height:11px}
+          /* dock — seek bar gets its own full-width row, fat touch target */
+          .dock .col{height:auto;padding-block:11px;gap:10px;flex-wrap:wrap}
+          .disc{width:30px;height:30px}
+          .now b{max-width:44vw}
+          .now i{max-width:44vw}
+          .ctl button{width:36px;height:36px}
+          .seek{flex:1 1 100%;order:9;min-width:0;gap:8px}
+          .track{height:36px}
+          .track::before{height:2px}
+          .fill{height:2px}
+          .knob{opacity:1;width:11px;height:11px}
 
-      .ytbox{right:10px;top:62px;bottom:auto;width:calc(100vw - 20px)}
-      .totop{bottom:158px;width:40px;height:40px}
-      .foot-links{gap:22px}
-      .fbtn .ic{width:44px;height:44px}
-      .foot-bottom{justify-content:center;text-align:center;gap:8px}
-    }
+          .ytbox{right:10px;top:62px;bottom:auto;width:calc(100vw - 20px)}
+          .totop{bottom:156px;width:40px;height:40px}
+          .foot-links{gap:22px}
+          .fbtn .ic{width:44px;height:44px}
+          .foot-bottom{justify-content:center;text-align:center;gap:8px}
+        }
   /* ---------- motion layer ---------- */
   .glow{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
   .glow i{position:absolute;display:block;border-radius:50%;filter:blur(48px);opacity:.85;
@@ -501,8 +506,135 @@
         box-shadow:0 0 20px rgba(207,214,221,.16);transform:translateY(-3px)}
       .fbtn:hover .cap{color:var(--ink)}
 
-    @media (prefers-reduced-motion:reduce){
-    *{animation:none!important;transition:none!important}
+    /* ============ clean rhythm & readability ============ */
+      body{font-size:16.5px;line-height:1.72}
+
+      .sec{padding:clamp(76px,12vh,140px) 0}
+      .sec .col{grid-template-columns:minmax(104px,168px) 1fr;gap:clamp(30px,5.5vw,80px)}
+      .lbl{letter-spacing:.22em;line-height:1.7;color:#8b9199}
+  .lbl .num{color:#cfd6dd;opacity:.55;margin-right:10px;font-variant-numeric:tabular-nums}
+
+      .lead{font-size:clamp(1.05rem,2.05vw,1.32rem);line-height:1.5;color:#9aa0a8;
+        max-width:46ch;margin:0 0 clamp(30px,5vh,48px)}
+
+      /* quotes — room to breathe, comfortable line length */
+      .ql li{font-size:clamp(1.3rem,3vw,2.05rem);line-height:1.36;letter-spacing:-.006em;
+        padding:clamp(28px,4.6vh,50px) 0;max-width:min(100%,20em)}
+      .ql li:first-child{padding-top:0}
+
+      /* hero */
+      .hero{padding:clamp(84px,17vh,190px) 0 clamp(60px,11vh,120px)}
+      .kicker{margin-bottom:clamp(26px,4.4vh,42px)}
+      .tag{margin-top:clamp(32px,6vh,60px);line-height:1.32}
+      .facts{margin-top:clamp(30px,5.4vh,50px);gap:10px 32px}
+      .facts span{letter-spacing:.2em}
+
+      /* tracks — calmer rows */
+      .tr button{padding:19px 0;gap:18px}
+      .tr .t{font-size:clamp(1rem,2vw,1.18rem);letter-spacing:0}
+      .tr .a{letter-spacing:.13em}
+      .tr .n{font-size:.72rem}
+
+      /* story — clear blocks, easy measure */
+      .story{gap:clamp(38px,6.5vh,70px)}
+      .story article{padding-top:clamp(24px,4.2vh,40px)}
+      .story h3{font-size:clamp(1.15rem,2.4vw,1.55rem);margin:0 0 .65em;line-height:1.25}
+      .story p{font-size:1.03rem;line-height:1.85;max-width:58ch;color:rgba(233,237,241,.72)}
+
+      /* the closing line stands on its own */
+      #closingLine{font-size:clamp(1.05rem,2.1vw,1.35rem);line-height:1.55;max-width:40ch}
+
+      /* footer */
+      footer{padding:clamp(68px,11vh,112px) 0 58px}
+      .foot-head{letter-spacing:.26em}
+      .foot-lead{margin-bottom:clamp(24px,4.2vh,38px)}
+      .foot-bottom{margin-top:clamp(30px,5vh,48px);padding-top:26px}
+
+      /* quieter noise so the words stay the focus */
+      .grain{opacity:.032}
+
+      /* ============ text clarity pass ============ */
+        /* heavier strokes — thin light text was getting lost on the photo */
+        body{font-weight:400}
+        .ql li{font-weight:400;color:#f7f9fc}
+        .tag{font-weight:400}
+        .lead{color:#aab1b9}
+        .story h3{font-weight:400;color:#f2f5f9}
+        .story p{font-size:1.07rem;color:rgba(242,246,250,.90)}
+        .tr .t{font-weight:400;color:#f2f5f9}
+        .tr .a{color:#9ba2ab}
+        .lbl,.kicker{color:#98a0a9}
+        .foot-lead{color:#a7aeb6}
+
+        /* soft frosted scrim so the photo's grain stops competing with the words
+           (fades out at the edges — no visible box) */
+        .sec .body{position:relative}
+        .sec .body::before{
+          content:"";position:absolute;inset:-34px -38px;z-index:-1;border-radius:30px;
+          background:rgba(0,0,0,.46);
+          -webkit-backdrop-filter:blur(18px) saturate(115%);
+          backdrop-filter:blur(18px) saturate(115%);
+          -webkit-mask-image:radial-gradient(125% 105% at 38% 50%, #000 40%, transparent 86%);
+          mask-image:radial-gradient(125% 105% at 38% 50%, #000 40%, transparent 86%);
+          pointer-events:none;
+        }
+
+        /* ============ one layout for every screen ============ */
+          /* a single centred column — desktop and phone now look the same,
+             just with more empty space around it on a big screen */
+          .col{width:min(820px,100%);margin:0 auto;padding-inline:clamp(18px,5vw,32px)}
+
+          /* no more two-column split — the label sits above the content everywhere */
+          .sec .col{display:block}
+          .lbl{display:block;position:static;margin:0 0 clamp(16px,2.6vh,26px)}
+
+          /* ---- type system: smaller, with clear font roles ---- */
+                    /* Bodoni = display & quotes · Manrope = labels, body, meta */
+                    body{font-size:clamp(15.5px,14.8px + .2vw,16.5px);line-height:1.75;
+                      font-optical-sizing:auto}
+
+                    /* display — only the name */
+                    .name{font-size:clamp(2.25rem,6.4vw,4.4rem);line-height:.94;letter-spacing:-.03em;
+                      font-weight:400;font-variation-settings:"opsz" 96}
+
+                    /* one-line intro */
+                    .tag{font-size:clamp(1rem,.85rem + .75vw,1.32rem);line-height:1.44;max-width:28ch;
+                      font-weight:400;font-variation-settings:"opsz" 40}
+
+                    /* labels & kicker — sans, wide tracking, quiet */
+                    .kicker{font-size:clamp(.6rem,.55rem + .12vw,.66rem);letter-spacing:.28em}
+                    .lbl{font-size:clamp(.6rem,.55rem + .12vw,.66rem);letter-spacing:.26em;font-weight:500}
+
+                    /* the small line under each label */
+                    .lead{font-size:clamp(.94rem,.88rem + .3vw,1.08rem);line-height:1.62;max-width:48ch}
+
+                    /* quotes — smaller, calm, generous spacing */
+                    .ql li{font-size:clamp(1.12rem,.96rem + .82vw,1.48rem);line-height:1.5;
+                      letter-spacing:0;font-weight:400;max-width:min(100%,24em);
+                      padding:clamp(22px,3.4vh,38px) 0;font-variation-settings:"opsz" 36}
+
+                    /* story */
+                    .story h3{font-size:clamp(1.02rem,.9rem + .5vw,1.3rem);line-height:1.3}
+                    .story p{font-size:clamp(.95rem,.9rem + .25vw,1.04rem);line-height:1.85;max-width:58ch}
+
+                    /* tracklist */
+                    .tr .t{font-size:clamp(.95rem,.88rem + .34vw,1.06rem)}
+                    .tr .a,.tr .n{font-size:clamp(.56rem,.52rem + .1vw,.62rem);letter-spacing:.16em}
+
+                    /* closing + footer */
+                    #closingLine{font-size:clamp(1rem,.9rem + .45vw,1.22rem)}
+                    .foot-head{font-size:clamp(.58rem,.54rem + .1vw,.64rem);letter-spacing:.28em}
+                    .foot-lead{font-size:clamp(.98rem,.9rem + .35vw,1.2rem)}
+                    .foot-bottom{font-size:clamp(.56rem,.52rem + .1vw,.62rem)}
+                    .foot-links .v{font-size:clamp(.88rem,.82rem + .3vw,1rem)}
+                    .fbtn .cap{font-size:clamp(.56rem,.52rem + .1vw,.62rem)}
+
+                    /* rhythm — tighter now that the type is smaller */
+                    .sec{padding:clamp(48px,6vw,88px) 0}
+                    .hero{padding:clamp(58px,7.5vw,120px) 0 clamp(38px,5vw,76px)}
+
+                    @media (prefers-reduced-motion:reduce){
+                      *{animation:none!important;transition:none!important}
     .ql li,.story article,.name .ch,.kicker,.tag,.facts,.ql li .w{opacity:1!important;transform:none!important;filter:none!important}
     html{scroll-behavior:auto}
     .glow,.grain,#dust,.spot,.prog,.curtain,.trail,.aurora,.vignette,.fx-layer,.veil,.fog,.flicker{display:none!important}
@@ -529,6 +661,16 @@
   <div class="col">
     <span class="mark" id="mark">Blackveil</span>
     <nav id="nav"></nav>
+    <span class="clock" id="clock" title="Local time">
+      <svg class="dial" viewBox="0 0 40 40" aria-hidden="true">
+        <circle cx="20" cy="20" r="18.4" fill="none" stroke="currentColor" stroke-opacity=".26"/>
+        <line id="hHand" x1="20" y1="20" x2="20" y2="9.2" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+        <line id="mHand" x1="20" y1="20" x2="20" y2="6.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+        <line id="sHand" x1="20" y1="20" x2="20" y2="5.2" stroke="currentColor" stroke-width=".9" stroke-linecap="round" opacity=".8"/>
+        <circle cx="20" cy="20" r="1.5" fill="currentColor"/>
+      </svg>
+      <b id="clockTime">--:--:--</b>
+    </span>
   </div>
 </header>
 
@@ -655,8 +797,11 @@
     { sec:'foot', title:C.followTitle||'Find Me' }
   ];
   var nav = $('nav');
-  S.forEach(function(s){
-    set(s.lbl, s.title);
+  S.forEach(function(s, si){
+      var lblEl = s.lbl ? $(s.lbl) : null;
+      if(lblEl){
+        lblEl.innerHTML = '<span class="num">' + ('0' + (si + 1)).slice(-2) + '</span> ' + (s.title || '');
+      }
     if(s.lead) set(s.lead, s.leadText);
     if(nav){
       var b = document.createElement('button');
@@ -723,6 +868,21 @@
     set('npTitle', t.title || '');
     set('npArtist', t.artist || '');
 
+    /* phone lock-screen / notification info */
+    if('mediaSession' in navigator && window.MediaMetadata){
+      try{
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: t.title || '',
+          artist: t.artist || '',
+          album: 'Blackveil',
+          artwork: [
+            { src: 'icon-192.png', sizes: '192x192', type: 'image/png' },
+            { src: 'icon-512.png', sizes: '512x512', type: 'image/png' }
+          ]
+        });
+      }catch(e){}
+    }
+
     var yt = $('ytOpen');
     if(t.src){
       if(dock) dock.classList.remove('yt');
@@ -783,8 +943,14 @@
   if(audio){
     audio.addEventListener('timeupdate', paint);
     audio.addEventListener('loadedmetadata', paint);
-    audio.addEventListener('play',  function(){ setPlaying(true); });
-    audio.addEventListener('pause', function(){ setPlaying(false); });
+    audio.addEventListener('play',  function(){
+          setPlaying(true);
+          if('mediaSession' in navigator) navigator.mediaSession.playbackState = 'playing';
+        });
+        audio.addEventListener('pause', function(){
+          setPlaying(false);
+          if('mediaSession' in navigator) navigator.mediaSession.playbackState = 'paused';
+        });
     audio.addEventListener('ended', function(){
       for(var j=cur+1;j<songs.length;j++){ if(songs[j].src){ select(j, true); return; } }
       setPlaying(false);
@@ -813,6 +979,27 @@
   }
   if(pv) pv.addEventListener('click', function(){ step(-1); });
   if(nx) nx.addEventListener('click', function(){ step(1); });
+
+  /* ---------- phone lock-screen buttons (Media Session) ---------- */
+  if('mediaSession' in navigator){
+    try{
+      navigator.mediaSession.setActionHandler('play', function(){
+        if(audio && audio.src){ var pr = audio.play(); if(pr && pr.catch) pr.catch(function(){}); }
+      });
+      navigator.mediaSession.setActionHandler('pause', function(){ if(audio) audio.pause(); });
+      navigator.mediaSession.setActionHandler('previoustrack', function(){ step(-1); });
+      navigator.mediaSession.setActionHandler('nexttrack', function(){ step(1); });
+      navigator.mediaSession.setActionHandler('seekbackward', function(){
+        if(audio) audio.currentTime = Math.max(0, audio.currentTime - 10);
+      });
+      navigator.mediaSession.setActionHandler('seekforward', function(){
+        if(audio && isFinite(audio.duration)) audio.currentTime = Math.min(audio.duration, audio.currentTime + 10);
+      });
+      navigator.mediaSession.setActionHandler('seekto', function(d){
+        if(d && typeof d.seekTime === 'number' && audio) audio.currentTime = d.seekTime;
+      });
+    }catch(e){}
+  }
   var sk = $('seek');
     if(sk){
       var grabbing = false;
@@ -1162,25 +1349,29 @@
     nm.appendChild(sw);
   }
 
-  /* --- click / touch burst (colour splashes) --- */
-  var layer = document.createElement('div');
-  layer.className = 'fx-layer';
-  document.body.appendChild(layer);
-  var COLORS = ['143,208,232', '255,157,107', '143,227,176', '232,201,143',
-                '214,222,230', '255,255,255', '196,146,255'];
-  document.addEventListener('pointerdown', function(e){
-    var c = COLORS[(Math.random() * COLORS.length) | 0];
-    var size = 52 + Math.random() * 36;
-    var d = document.createElement('span');
-    d.className = 'ripple';
-    d.style.setProperty('--c', c);
-    d.style.left = e.clientX + 'px';
-    d.style.top = e.clientY + 'px';
-    d.style.width = size + 'px';
-    d.style.height = size + 'px';
-    layer.appendChild(d);
-    setTimeout(function(){ if(d.parentNode) d.parentNode.removeChild(d); }, 840);
-  }, {passive:true});
+  /* --- click / touch burst (colour splashes) ---
+       এখন বন্ধ। আবার চালু করতে নিচের লাইনে true করুন। */
+    var CLICK_FX = false;
+    if(CLICK_FX){
+      var layer = document.createElement('div');
+      layer.className = 'fx-layer';
+      document.body.appendChild(layer);
+      var COLORS = ['143,208,232', '255,157,107', '143,227,176', '232,201,143',
+                    '214,222,230', '255,255,255', '196,146,255'];
+      document.addEventListener('pointerdown', function(e){
+        var c = COLORS[(Math.random() * COLORS.length) | 0];
+        var size = 52 + Math.random() * 36;
+        var d = document.createElement('span');
+        d.className = 'ripple';
+        d.style.setProperty('--c', c);
+        d.style.left = e.clientX + 'px';
+        d.style.top = e.clientY + 'px';
+        d.style.width = size + 'px';
+        d.style.height = size + 'px';
+        layer.appendChild(d);
+        setTimeout(function(){ if(d.parentNode) d.parentNode.removeChild(d); }, 840);
+      }, {passive:true});
+    }
 
   /* --- 3D: the big name leans with the cursor --- */
   var nm3 = document.getElementById('name');
@@ -1216,6 +1407,34 @@
 /* ============ extras: keys · memory · top · spy ============ */
 (function(){
   var rows = document.querySelectorAll('#tracks button');
+
+  /* --- live watch (real time) --- */
+  (function(){
+    var hH = document.getElementById('hHand');
+    var mH = document.getElementById('mHand');
+    var sH = document.getElementById('sHand');
+    var out = document.getElementById('clockTime');
+    if(!out) return;
+    function pad(n){ return (n < 10 ? '0' : '') + n; }
+    function tick(){
+          var d = new Date();
+          var hh = d.getHours(), mm = d.getMinutes(), ss = d.getSeconds();
+          var h12 = hh % 12; if(h12 === 0) h12 = 12;
+          out.textContent = pad(h12) + ':' + pad(mm) + ':' + pad(ss) + ' ' + (hh < 12 ? 'AM' : 'PM');
+          if(sH) sH.style.transform = 'rotate(' + (ss * 6) + 'deg)';
+          if(mH) mH.style.transform = 'rotate(' + (mm * 6 + ss * 0.1) + 'deg)';
+          if(hH) hH.style.transform = 'rotate(' + ((hh % 12) * 30 + mm * 0.5) + 'deg)';
+        }
+    tick();
+    setInterval(tick, 1000);
+  })();
+
+  /* --- offline & installable (PWA) --- */
+  if('serviceWorker' in navigator && location.protocol === 'https:'){
+    addEventListener('load', function(){
+      navigator.serviceWorker.register('sw.js').catch(function(){});
+    });
+  }
 
   /* --- keyboard shortcuts --- */
   document.addEventListener('keydown', function(e){
