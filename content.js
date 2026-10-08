@@ -122,20 +122,14 @@ window.CONTENT = {
      নিচের demo লাইনটা মুছে দিন। যত খুশি লাইন যোগ করুন। */
   songsTitle: "My Soundtrack",
   songs: [
-        /* ===== সাইটের ভেতরেই বাজবে — ফাইল আছে songs/ ফোল্ডারে ===== */
-        { title: "her",          artist: "JVKE",                      src: "songs/her.mp3" },
-        { title: "Nevada",       artist: "Vicetone, Cozi Zuehlsdorff", src: "songs/nevada.mp3" },
-        { title: "Him & I",      artist: "G-Eazy, Halsey",            src: "songs/him-and-i.mp3" },
-        { title: "After Dark",   artist: "Mr.Kitty",                  src: "songs/after-dark.mp3" },
-
-        /* ===== ▶ চাপলে YouTube-এ খুলবে ===== */
-        { title: "Sweater Weather",    artist: "The Neighbourhood",           youtube: "https://youtu.be/GCdwKhTtNNw" },
-        { title: "Daddy Issues",       artist: "The Neighbourhood",           youtube: "https://youtu.be/_lMlsPQJs6U" },
-        { title: "Do I Wanna Know?",   artist: "Arctic Monkeys",              youtube: "https://youtu.be/bpOSxM0rNPM" },
-        { title: "MIDDLE OF THE NIGHT",artist: "Elley Duhé",                  youtube: "https://youtu.be/oSHzUD-uqKY" },
-        { title: "Another Love",       artist: "Tom Odell",                   youtube: "https://youtu.be/MwpMEbgC7DA" },
-        { title: "Space Song",         artist: "Beach House",                 youtube: "https://youtu.be/RBtlPT23PTM" }
-      ],
+          /* ===== সাইটের ভেতরেই বাজবে — ফাইল আছে songs/ ফোল্ডারে ===== */
+          { title: "her",                 artist: "JVKE",                       src: "songs/her.mp3" },
+          { title: "Nevada",              artist: "Vicetone, Cozi Zuehlsdorff", src: "songs/nevada.mp3" },
+          { title: "Him & I",             artist: "G-Eazy, Halsey",             src: "songs/him-and-i.mp3" },
+          { title: "After Dark",          artist: "Mr.Kitty",                   src: "songs/after-dark.mp3" },
+          { title: "Sweater Weather",     artist: "The Neighbourhood",          src: "songs/sweater-weather.mp3" },
+          { title: "MIDDLE OF THE NIGHT", artist: "Elley Duhé",                 src: "songs/middle-of-the-night.mp3" }
+        ],
 
   /* ----- CLOSING ----- */
   closingTitle: "And Now",
