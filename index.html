@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="theme-color" content="#000000">
 <title>Blackveil · Story</title>
@@ -227,7 +227,8 @@
           .bar nav button{letter-spacing:.13em;white-space:nowrap;flex:0 0 auto}
 
           /* dock — seek bar gets its own full-width row, fat touch target */
-          .dock .col{height:auto;padding-block:11px;gap:10px;flex-wrap:wrap}
+          .dock .col{height:auto;gap:10px;flex-wrap:wrap;
+            padding-top:11px;padding-bottom:calc(11px + env(safe-area-inset-bottom,0px))}
           .disc{width:30px;height:30px}
           .now b{max-width:44vw}
           .now i{max-width:44vw}
@@ -383,7 +384,8 @@
 
   /* giant watermark behind the hero */
   .hero-mark{
-    position:absolute;inset:0;z-index:-1;display:grid;place-items:center;
+    position:absolute;inset:0;width:100%;max-width:100%;overflow:hidden;
+    z-index:-1;display:grid;place-items:center;
     font-family:var(--serif);font-size:clamp(9rem,26vw,22rem);line-height:1;
     letter-spacing:-.05em;color:rgba(233,237,241,.04);white-space:nowrap;
     pointer-events:none;user-select:none;opacity:0;transition:opacity 1.6s ease .3s;
@@ -491,7 +493,7 @@
   /* ============ photographic horror background ============ */
   .bgphoto{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:#000}
   .bgphoto i{position:absolute;inset:-8%;display:block;
-      background:url("bg-horror-dark.jpg") center 56%/cover no-repeat;
+      background:url("bg-horror-blur.jpg") center 56%/cover no-repeat;
       opacity:.96;will-change:transform;
       animation:bgdrift 52s ease-in-out infinite alternate}
   @keyframes bgdrift{
@@ -506,7 +508,7 @@
           /* phones get the tall version of the picture, so far less of it is cropped away */
           @media (max-width:760px){
             .bgphoto i{
-                  background-image:url("bg-horror-portrait-dark.jpg");
+                  background-image:url("bg-horror-blur-portrait.jpg");
                   background-position:center 42%;
                   opacity:1;
                 }
@@ -627,18 +629,17 @@
         .lbl,.kicker{color:#98a0a9}
         .foot-lead{color:#a7aeb6}
 
-        /* soft frosted scrim so the photo's grain stops competing with the words
-           (fades out at the edges — no visible box) */
+        /* the dark panel that used to sit behind the words is gone —
+           the words now sit straight on the photograph */
         .sec .body{position:relative}
-        .sec .body::before{
-          content:"";position:absolute;inset:-34px -38px;z-index:-1;border-radius:30px;
-          background:rgba(0,0,0,.46);
-          -webkit-backdrop-filter:blur(18px) saturate(115%);
-          backdrop-filter:blur(18px) saturate(115%);
-          -webkit-mask-image:radial-gradient(125% 105% at 38% 50%, #000 40%, transparent 86%);
-          mask-image:radial-gradient(125% 105% at 38% 50%, #000 40%, transparent 86%);
-          pointer-events:none;
-        }
+
+        /* no panel, so the words carry their own soft shadow instead */
+        .sec .body, .sec .lbl, footer .col, .foot-lead,
+        .hero .col, .hero .facts, .bar .col{
+          text-shadow:0 1px 3px rgba(0,0,0,.82), 0 0 22px rgba(0,0,0,.6)}
+        .ql li{color:#f3f7fb}
+        .lbl,.kicker{color:#bcc4cc}
+        .facts span{color:#c2cad2}
 
         /* ============ one layout for every screen ============ */
           /* a single centred column — desktop and phone now look the same,
@@ -701,25 +702,26 @@
 
                                 /* type that scales with the screen — a small phone gets smaller
                                    text, so nothing has to be zoomed out to fit */
-                                body{font-size:clamp(13.5px,4.6vw,16.4px)}
-                                .name{font-size:clamp(30px,11.5vw,45px);line-height:.95}
-                                .tag{font-size:clamp(13px,4.25vw,18px)}
-                                .ql li{font-size:clamp(15px,5.15vw,21px);line-height:1.42;padding:17px 0}
-                                .lead{font-size:clamp(13px,3.95vw,16.8px)}
-                                .story h3{font-size:clamp(14px,4.5vw,18.6px)}
-                                .story p{font-size:clamp(13.5px,4vw,17px);line-height:1.78}
-                                .tr .t{font-size:clamp(13.5px,4vw,16.8px)}
-                                #closingLine{font-size:clamp(13.5px,4.2vw,17.6px)}
-                                .foot-lead{font-size:clamp(13.5px,4vw,16.8px)}
+                                body{font-size:clamp(13px,4.35vw,15.6px)}
+                                .name{font-size:clamp(28px,10.9vw,42px);line-height:.95}
+                                .tag{font-size:clamp(12.2px,4vw,16.6px)}
+                                .ql li{font-size:clamp(14.2px,4.9vw,19.4px);line-height:1.4;padding:15px 0}
+                                .lead{font-size:clamp(12.2px,3.7vw,15.6px)}
+                                .story h3{font-size:clamp(13.2px,4.2vw,17.2px)}
+                                .story p{font-size:clamp(13px,3.75vw,15.8px);line-height:1.74}
+                                .tr .t{font-size:clamp(13px,3.75vw,15.6px)}
+                                #closingLine{font-size:clamp(13px,3.95vw,16.4px)}
+                                .foot-lead{font-size:clamp(13px,3.75vw,15.6px)}
 
                                 /* tighter vertical rhythm — no loose, saggy feel */
-                                .sec{padding:38px 0}
-                                .hero{padding:44px 0 28px}
-                                .story{gap:24px}
+                                .sec{padding:34px 0}
+                                .hero{padding:40px 0 26px}
+                                .story{gap:22px}
                                 .ql li:first-child{padding-top:0}
 
                       /* top bar: name + clock on one row, the menu on its own row below */
-                      .bar .col{height:auto;flex-wrap:wrap;padding-block:9px;gap:8px 12px}
+                      .bar .col{height:auto;flex-wrap:wrap;gap:8px 12px;
+                      padding-top:calc(9px + env(safe-area-inset-top,0px));padding-bottom:9px}
                       .bar .mark{order:1;font-size:1rem}
                       .clock{order:2;margin-left:auto;gap:7px}
                       .clock .dial{width:24px;height:24px}
