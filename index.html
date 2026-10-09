@@ -696,25 +696,27 @@
 
                     /* ============ phones: bigger words, tidy two-row top bar ============ */
                     @media (max-width:760px){
-                      /* give the words more of the screen */
-                      .col{padding-inline:14px}
+                                /* give the words more of the screen */
+                                .col{padding-inline:13px}
 
-                      /* bigger, easier-to-read type on a small screen */
-                      body{font-size:16.4px}
-                      .name{font-size:2.7rem;line-height:.95}
-                      .tag{font-size:1.1rem}
-                      .ql li{font-size:1.24rem;line-height:1.42;padding:20px 0}
-                      .lead{font-size:1.02rem}
-                      .story h3{font-size:1.14rem}
-                      .story p{font-size:1.02rem;line-height:1.78}
-                      .tr .t{font-size:1.02rem}
-                      #closingLine{font-size:1.06rem}
-                      .foot-lead{font-size:1.02rem}
+                                /* type that scales with the screen — a small phone gets smaller
+                                   text, so nothing has to be zoomed out to fit */
+                                body{font-size:clamp(13.5px,4.6vw,16.4px)}
+                                .name{font-size:clamp(30px,11.5vw,45px);line-height:.95}
+                                .tag{font-size:clamp(13px,4.25vw,18px)}
+                                .ql li{font-size:clamp(15px,5.15vw,21px);line-height:1.42;padding:17px 0}
+                                .lead{font-size:clamp(13px,3.95vw,16.8px)}
+                                .story h3{font-size:clamp(14px,4.5vw,18.6px)}
+                                .story p{font-size:clamp(13.5px,4vw,17px);line-height:1.78}
+                                .tr .t{font-size:clamp(13.5px,4vw,16.8px)}
+                                #closingLine{font-size:clamp(13.5px,4.2vw,17.6px)}
+                                .foot-lead{font-size:clamp(13.5px,4vw,16.8px)}
 
-                      /* tighter vertical rhythm — no loose, saggy feel */
-                      .sec{padding:44px 0}
-                      .hero{padding:52px 0 34px}
-                      .story{gap:28px}
+                                /* tighter vertical rhythm — no loose, saggy feel */
+                                .sec{padding:38px 0}
+                                .hero{padding:44px 0 28px}
+                                .story{gap:24px}
+                                .ql li:first-child{padding-top:0}
 
                       /* top bar: name + clock on one row, the menu on its own row below */
                       .bar .col{height:auto;flex-wrap:wrap;padding-block:9px;gap:8px 12px}
