@@ -491,10 +491,9 @@
   /* ============ photographic horror background ============ */
   .bgphoto{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:#000}
   .bgphoto i{position:absolute;inset:-8%;display:block;
-    background:url("bg-horror.jpg") center 56%/cover no-repeat;
-        filter:grayscale(1) brightness(.62) contrast(1.15);
-        opacity:.85;will-change:transform;
-        animation:bgdrift 52s ease-in-out infinite alternate}
+      background:url("bg-horror-dark.jpg") center 56%/cover no-repeat;
+      opacity:.96;will-change:transform;
+      animation:bgdrift 52s ease-in-out infinite alternate}
   @keyframes bgdrift{
     0%{transform:scale(1.02) translate3d(-1.4%,0,0)}
     100%{transform:scale(1.15) translate3d(1.8%,-1.6%,0)}
@@ -507,17 +506,52 @@
           /* phones get the tall version of the picture, so far less of it is cropped away */
           @media (max-width:760px){
             .bgphoto i{
-              background-image:url("bg-horror-portrait.jpg");
-              background-position:center 42%;
-              filter:grayscale(1) brightness(.46) contrast(1.18);
-              opacity:.9;
-            }
+                  background-image:url("bg-horror-portrait-dark.jpg");
+                  background-position:center 42%;
+                  opacity:1;
+                }
             .bgphoto::after{
               background:
                 radial-gradient(120% 62% at 50% 32%, rgba(0,0,0,.62), transparent 66%),
                 linear-gradient(180deg, rgba(0,0,0,.55) 0%, rgba(0,0,0,.28) 32%, rgba(0,0,0,.46) 60%, rgba(0,0,0,.86) 100%);
-            }
-          }
+                            }
+                          }
+
+                  /* ============ lite mode — keeps scrolling smooth on phones ============ */
+                  body.lite .aurora,
+                  body.lite .glow,
+                  body.lite .trail,
+                  body.lite .spot{display:none!important}
+
+                  /* backdrop-filter is the most expensive thing on a cheap phone — remove it */
+                  body.lite .sec .body::before{
+                    -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+                    background:rgba(0,0,0,.58)}
+                  body.lite .bar,
+                  body.lite .dock,
+                  body.lite .totop{
+                    -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+                    background:rgba(6,6,7,.97)}
+                  body.lite .ytcard,
+                  body.lite #err{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+
+                  /* stop the full-screen grain from repainting */
+                  body.lite .grain{animation:none!important;opacity:.028}
+
+                  /* the big photo stays still; one fog layer keeps drifting instead */
+                  body.lite .bgphoto i{animation:none!important}
+                  body.lite .fog{mix-blend-mode:normal!important;opacity:.42}
+                  body.lite .fog i{filter:blur(34px)}
+                  body.lite .fog i:nth-child(1){animation:fog1 60s linear infinite!important}
+                  body.lite .fog i:nth-child(2),
+                  body.lite .fog i:nth-child(3){display:none}
+
+                  /* fewer full-screen flashes / glows */
+                  body.lite .flicker{animation-duration:23s}
+                  body.lite .prog{box-shadow:none}
+                  body.lite .vignette{background:
+                    radial-gradient(150% 105% at 50% 108%, rgba(0,0,0,.92), transparent 55%),
+                    linear-gradient(180deg, rgba(0,0,0,.22), transparent 22%)}
       .foot-links{display:inline-flex;align-items:flex-start;gap:clamp(14px,3vw,30px);
         flex-wrap:wrap;justify-content:center;text-transform:none;letter-spacing:normal}
       .fbtn{display:flex;flex-direction:column;align-items:center;gap:8px;text-decoration:none;
@@ -1162,6 +1196,20 @@
 })();
 </script>
 <script>
+/* ============ device check: keep phones smooth ============ */
+(function(){
+  try{
+    var touch = window.matchMedia && matchMedia('(pointer: coarse)').matches;
+    var cores = navigator.hardwareConcurrency || 8;
+    var mem = navigator.deviceMemory || 8;
+    if(touch || cores <= 4 || mem <= 4){
+      document.documentElement.className += ' lite';
+      if(document.body) document.body.className += ' lite';
+      window.__lite = true;
+    }
+  }catch(e){}
+})();
+
 /* ================= motion layer ================= */
 (function(){
   var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1178,8 +1226,9 @@
   document.body.appendChild(grain);
 
   if(!reduce){
-    /* cursor light */
-    var spot = document.createElement('div');
+      /* cursor light — pointer only, skipped on phones */
+      if(!window.__lite){
+      var spot = document.createElement('div');
     spot.className = 'spot';
     document.body.appendChild(spot);
     var sx = 0, sy = 0, tx = 0, ty = 0, on = false;
@@ -1191,9 +1240,10 @@
       sx += (tx - sx) * 0.12; sy += (ty - sy) * 0.12;
       spot.style.transform = 'translate3d(' + sx.toFixed(1) + 'px,' + sy.toFixed(1) + 'px,0)';
       requestAnimationFrame(follow);
-    })();
+          })();
+          }
 
-    /* reading progress */
+          /* reading progress */
     var prog = document.createElement('div');
     prog.className = 'prog';
     document.body.appendChild(prog);
@@ -1226,7 +1276,7 @@
     function size(){ W = cv.width = window.innerWidth; H = cv.height = window.innerHeight; }
     size();
     addEventListener('resize', size);
-    var N = window.innerWidth < 720 ? 26 : 48;
+    var N = window.__lite ? 12 : (window.innerWidth < 720 ? 26 : 48);
     for(var i=0;i<N;i++){
       ps.push({
         x: Math.random()*W, y: Math.random()*H,
@@ -1236,8 +1286,11 @@
         a: Math.random()*0.4 + 0.2
       });
     }
-    (function loop(){
-      g.clearRect(0,0,W,H);
+    var lastDraw = 0;
+        (function loop(now){
+          if(window.__lite && now - lastDraw < 45){ requestAnimationFrame(loop); return; }
+          lastDraw = now || 0;
+          g.clearRect(0,0,W,H);
       for(var i=0;i<ps.length;i++){
         var p = ps[i];
         g.beginPath();
@@ -1328,8 +1381,8 @@
       hero.style.transform = 'translateY(' + (-p * 44).toFixed(1) + 'px)';
       hero.style.opacity = (1 - p * 0.88).toFixed(3);
     }
-    if(nameEl){
-      var p2 = Math.min(1, y / 640);
+    if(nameEl && !window.__lite){
+          var p2 = Math.min(1, y / 640);
       nameEl.style.letterSpacing = (-0.025 + p2 * 0.055).toFixed(4) + 'em';
     }
     ticking = false;
@@ -1350,8 +1403,9 @@
     el.addEventListener('mouseleave', function(){ el.style.transform = ''; });
   });
 
-  /* --- cursor trail --- */
-  var pts = [];
+  /* --- cursor trail (mouse only) --- */
+    var pts = [];
+    if(!window.__lite){
   for(var i=0;i<8;i++){
     var d = document.createElement('div');
     d.className = 'trail';
@@ -1374,7 +1428,8 @@
       px = p.x; py = p.y;
     }
     requestAnimationFrame(trailLoop);
-  })();
+      })();
+      }
 
   /* --- aurora + vignette --- */
   var aur = document.createElement('div');
@@ -1436,7 +1491,7 @@
 
   /* --- 3D: the big name leans with the cursor --- */
   var nm3 = document.getElementById('name');
-  if(nm3){
+    if(nm3 && !window.__lite){
     var lx = 0, ly = 0, tlx = 0, tly = 0;
     document.addEventListener('mousemove', function(e){
       var nx = (e.clientX / window.innerWidth) * 2 - 1;
