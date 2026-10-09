@@ -660,6 +660,39 @@
                     .sec{padding:clamp(48px,6vw,88px) 0}
                     .hero{padding:clamp(58px,7.5vw,120px) 0 clamp(38px,5vw,76px)}
 
+                    /* ============ phones: bigger words, tidy two-row top bar ============ */
+                    @media (max-width:760px){
+                      /* give the words more of the screen */
+                      .col{padding-inline:14px}
+
+                      /* bigger, easier-to-read type on a small screen */
+                      body{font-size:16.4px}
+                      .name{font-size:2.7rem;line-height:.95}
+                      .tag{font-size:1.1rem}
+                      .ql li{font-size:1.24rem;line-height:1.42;padding:20px 0}
+                      .lead{font-size:1.02rem}
+                      .story h3{font-size:1.14rem}
+                      .story p{font-size:1.02rem;line-height:1.78}
+                      .tr .t{font-size:1.02rem}
+                      #closingLine{font-size:1.06rem}
+                      .foot-lead{font-size:1.02rem}
+
+                      /* tighter vertical rhythm — no loose, saggy feel */
+                      .sec{padding:44px 0}
+                      .hero{padding:52px 0 34px}
+                      .story{gap:28px}
+
+                      /* top bar: name + clock on one row, the menu on its own row below */
+                      .bar .col{height:auto;flex-wrap:wrap;padding-block:9px;gap:8px 12px}
+                      .bar .mark{order:1;font-size:1rem}
+                      .clock{order:2;margin-left:auto;gap:7px}
+                      .clock .dial{width:24px;height:24px}
+                      .clock b{font-size:.66rem;letter-spacing:.1em}
+                      .bar nav{order:3;flex:1 0 100%;gap:12px;flex-wrap:wrap;
+                                    overflow:visible;padding-bottom:2px}
+                                  .bar nav button{font-size:.58rem;letter-spacing:.09em;white-space:nowrap;flex:0 0 auto}
+                    }
+
                     @media (prefers-reduced-motion:reduce){
                       *{animation:none!important;transition:none!important}
     .ql li,.story article,.name .ch,.kicker,.tag,.facts,.ql li .w{opacity:1!important;transform:none!important;filter:none!important}
