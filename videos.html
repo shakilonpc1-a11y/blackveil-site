@@ -284,7 +284,7 @@ VIDEOS.forEach(function (v) {
   }
 
   strip.appendChild(love);
-  strip.appendChild(makeComments('bv:cm2:' + v.id));
+  strip.appendChild(makeComments(v.id));
   strip.appendChild(views);
   stage.appendChild(strip);
 
@@ -381,12 +381,51 @@ document.addEventListener('visibilitychange', function () {
    opens a panel. A DEMO: they live in this browser only.
 ------------------------------------------------------------------ */
 
-function makeComments(key, seed) {
-  var store;
-  try { store = JSON.parse(localStorage.getItem(key) || 'null'); } catch (e) { store = null; }
-  if (!store) { store = seed || []; save(); }
+/* ------------------------------------------------------------------
+   Comments - one thread per clip, kept in a free Supabase database so
+   everyone sees the same comments. The key below is a PUBLISHABLE key:
+   it is meant to sit in browser code, and the database rules only let
+   people READ and ADD - nobody can change or delete anyone's comment.
+------------------------------------------------------------------ */
+var SB_URL = 'https://vybrxcfyhsfkymbdbbak.supabase.co';
+var SB_KEY = 'sb_publishable_GdojmJ37cI5sEAAGeQ-EhA_h6iM5ptZ';
+var SB_HDR = { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' };
 
-  function save() { try { localStorage.setItem(key, JSON.stringify(store)); } catch (e) {} }
+var SB_COUNTS = {};        /* clip id -> how many comments */
+var SB_BUTTONS = [];       /* the little counters on the clips */
+
+function sbRows(videoId){
+  return fetch(SB_URL + '/rest/v1/comments?video=eq.' + encodeURIComponent(videoId) +
+               '&select=id,parent,name,body,created_at&order=created_at.asc&limit=500',
+               { headers: SB_HDR })
+    .then(function(r){ if(!r.ok) throw new Error('load ' + r.status); return r.json(); });
+}
+
+function sbAdd(row){
+  var h = { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY,
+            'Content-Type': 'application/json', 'Prefer': 'return=representation' };
+  return fetch(SB_URL + '/rest/v1/comments', { method: 'POST', headers: h, body: JSON.stringify(row) })
+    .then(function(r){ if(!r.ok) throw new Error('save ' + r.status); return r.json(); });
+}
+
+function sbPaintCounts(){
+  SB_BUTTONS.forEach(function(b){ b.paint(SB_COUNTS[b.id] || 0); });
+}
+
+/* how many comments each clip has - one small request for the whole page */
+fetch(SB_URL + '/rest/v1/comments?select=video', { headers: SB_HDR })
+  .then(function(r){ return r.ok ? r.json() : []; })
+  .then(function(rows){
+    rows.forEach(function(r){ SB_COUNTS[r.video] = (SB_COUNTS[r.video] || 0) + 1; });
+    sbPaintCounts();
+  })
+  .catch(function(){});
+
+function makeComments(videoId) {
+  var store = [];
+  var loaded = false;
+  var busy = false;
+
   function esc(s) {
     return String(s).replace(/[&<>"']/g, function (c) {
       return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
@@ -397,7 +436,8 @@ function makeComments(key, seed) {
     if (s < 60) return 'just now';
     if (s < 3600) return Math.floor(s / 60) + 'm';
     if (s < 86400) return Math.floor(s / 3600) + 'h';
-    return Math.floor(s / 86400) + 'd';
+    if (s < 2592000) return Math.floor(s / 86400) + 'd';
+    return new Date(t).toLocaleDateString();
   }
 
   /* ---------- the panel it opens ---------- */
@@ -410,8 +450,8 @@ function makeComments(key, seed) {
         '<button type="button" class="x" aria-label="Close">\u00d7</button></div>' +
       '<div class="clist"></div>' +
       '<form class="cform" autocomplete="off">' +
-        '<input type="text" maxlength="24" placeholder="Your name (optional)">' +
-        '<textarea maxlength="300" placeholder="Write a comment\u2026" required></textarea>' +
+        '<input type="text" maxlength="30" placeholder="Your name (optional)">' +
+        '<textarea maxlength="500" placeholder="Write a comment\u2026" required></textarea>' +
         '<button type="submit">Post</button>' +
       '</form>' +
     '</div>';
@@ -429,19 +469,30 @@ function makeComments(key, seed) {
   sheet.querySelector('.x').addEventListener('click', close);
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
 
-  /* ---------- the button that sits on the video ---------- */
+  /* ---------- the button that sits on the clip ---------- */
   var btn = document.createElement('button');
   btn.type = 'button';
   btn.className = 'cta';
   btn.setAttribute('aria-label', 'Comments');
   btn.innerHTML = COMMENT_ICON + '<span class="n"></span>';
+  btn.paint = function (n) { btn.querySelector('.n').textContent = n ? n : ''; };
   btn.addEventListener('click', function () {
     sheet.classList.add('open');
     inner.scrollTop = 0;
     Array.prototype.forEach.call(sheet.querySelectorAll('.creply'), function (el) { el.remove(); });
+    if (!loaded) load();
   });
+  SB_BUTTONS.push({ id: videoId, paint: btn.paint });
 
-  function myName() { return nameIn.value.trim().slice(0, 24); }
+  function myName() { return nameIn.value.trim().slice(0, 30); }
+
+  function note(msg) {
+    list.innerHTML = '';
+    var p = document.createElement('p');
+    p.className = 'sheet-empty';
+    p.textContent = msg;
+    list.appendChild(p);
+  }
 
   function node(c, depth) {
     var el = document.createElement('div');
@@ -457,7 +508,7 @@ function makeComments(key, seed) {
     rb.type = 'button'; rb.className = 'rlink'; rb.textContent = 'Reply';
     rb.addEventListener('click', function () { ask(c.id, el); });
     el.appendChild(head); el.appendChild(p); el.appendChild(rb);
-    store.filter(function (r) { return r.parent === c.id; })
+    store.filter(function (r) { return Number(r.parent) === Number(c.id); })
          .sort(function (a, b) { return a.t - b.t; })
          .forEach(function (r) { el.appendChild(node(r, depth + 1)); });
     return el;
@@ -468,43 +519,70 @@ function makeComments(key, seed) {
     if (open) { open.remove(); return; }
     var rbox = document.createElement('div');
     rbox.className = 'creply';
-    rbox.innerHTML = '<textarea maxlength="300" placeholder="Reply\u2026"></textarea>' +
+    rbox.innerHTML = '<textarea maxlength="500" placeholder="Reply\u2026"></textarea>' +
       '<div class="row"><button type="button" class="no">Cancel</button>' +
       '<button type="button" class="go">Reply</button></div>';
     var ta = rbox.querySelector('textarea');
     rbox.querySelector('.no').addEventListener('click', function () { rbox.remove(); });
     rbox.querySelector('.go').addEventListener('click', function () {
       var v = ta.value.trim();
-      if (!v) return;
-      store.push({ id: Date.now(), parent: pid, name: myName(), text: v, t: Date.now() });
-      save(); render();
+      if (!v || busy) return;
+      busy = true;
+      sbAdd({ video: videoId, parent: Number(pid), name: myName(), body: v })
+        .then(function (rows) {
+          busy = false;
+          if (rows && rows[0]) store.push(mapRow(rows[0]));
+          SB_COUNTS[videoId] = (SB_COUNTS[videoId] || 0) + 1;
+          sbPaintCounts();
+          render();
+        })
+        .catch(function () { busy = false; alert('Could not post. Please try again.'); });
     });
     host.appendChild(rbox);
     ta.focus();
   }
 
+  function mapRow(r) {
+    return { id: r.id, parent: r.parent, name: r.name || '',
+             text: r.body, t: new Date(r.created_at).getTime() };
+  }
+
   function render() {
     list.innerHTML = '';
-    var tops = store.filter(function (c) { return !c.parent; })
+    var tops = store.filter(function (c) { return !c.parent || Number(c.parent) === 0; })
                     .sort(function (a, b) { return b.t - a.t; });
-    if (!tops.length) {
-      var e = document.createElement('p');
-      e.className = 'sheet-empty';
-      e.textContent = 'No comments yet. Be the first.';
-      list.appendChild(e);
-    }
+    if (!tops.length) { note('No comments yet. Be the first.'); }
     tops.forEach(function (c) { list.appendChild(node(c, 0)); });
-    var n = String(store.length);
-    count.textContent = store.length ? '(' + n + ')' : '';
-    btn.querySelector('.n').textContent = store.length ? n : '';
+    var n = store.length;
+    count.textContent = n ? '(' + n + ')' : '';
+  }
+
+  function load() {
+    note('Loading\u2026');
+    sbRows(videoId)
+      .then(function (rows) {
+        store = rows.map(mapRow);
+        loaded = true;
+        render();
+      })
+      .catch(function () { note('Could not load comments. Check your connection.'); });
   }
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     var v = box.value.trim();
-    if (!v) return;
-    store.push({ id: Date.now(), parent: 0, name: myName(), text: v, t: Date.now() });
-    save(); box.value = ''; render();
+    if (!v || busy) return;
+    busy = true;
+    sbAdd({ video: videoId, parent: 0, name: myName(), body: v })
+      .then(function (rows) {
+        busy = false;
+        if (rows && rows[0]) store.push(mapRow(rows[0]));
+        SB_COUNTS[videoId] = (SB_COUNTS[videoId] || 0) + 1;
+        sbPaintCounts();
+        box.value = '';
+        render();
+      })
+      .catch(function () { busy = false; alert('Could not post. Please try again.'); });
   });
 
   render();
