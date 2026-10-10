@@ -80,6 +80,12 @@
   .clock .dial line{transform-origin:20px 20px}
   .clock b{font-family:var(--sans);font-weight:400;font-size:clamp(.58rem,.54rem + .12vw,.68rem);
     letter-spacing:.14em;color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap}
+
+  /* how many people have opened the site — an eye, then just the number */
+  .bar-views{display:inline-flex;align-items:center;gap:6px;flex:0 0 auto}
+  .bar-views svg{width:14px;height:14px;fill:var(--dim);flex:0 0 auto}
+  .bar-views .n{font-family:var(--sans);font-weight:400;font-size:clamp(.6rem,.56rem + .12vw,.7rem);
+    letter-spacing:.12em;color:var(--dim);font-variant-numeric:tabular-nums}
   .bar nav{display:flex;gap:clamp(12px,2.4vw,28px)}
   .bar nav button,.bar nav a{
     background:none;border:0;padding:4px 0;cursor:pointer;text-decoration:none;
@@ -87,6 +93,16 @@
     color:var(--dim);transition:color .3s ease;
   }
   .bar nav button:hover,.bar nav a:hover{color:var(--ink)}
+
+  /* the Videos item stands out — a pill with a play mark */
+  .bar nav a.nav-videos{
+    display:inline-flex;align-items:center;gap:7px;
+    border:1px solid rgba(238,242,246,.36);border-radius:999px;
+    padding:5px 13px;color:var(--ink);background:rgba(255,255,255,.055);
+    transition:border-color .3s ease,background .3s ease,color .3s ease,transform .25s ease}
+  .bar nav a.nav-videos:hover{border-color:var(--ink);background:rgba(255,255,255,.11);
+    color:#fff;transform:translateY(-1px)}
+  .bar nav a.nav-videos svg{width:9px;height:9px;fill:currentColor;flex:0 0 auto}
 
   /* ---------- hero ---------- */
   .hero{padding:clamp(64px,13vh,140px) 0 clamp(40px,8vh,80px)}
@@ -729,6 +745,9 @@
                       padding-top:calc(9px + env(safe-area-inset-top,0px));padding-bottom:9px}
                       .bar .mark{order:1;font-size:1rem}
                       .clock{order:2;margin-left:auto;gap:7px}
+            .bar-views{order:2;gap:5px}
+            .bar-views svg{width:13px;height:13px}
+            .bar-views .n{font-size:.6rem}
                       .clock .dial{width:24px;height:24px}
                       .clock b{font-size:.66rem;letter-spacing:.1em}
                       .bar nav{order:3;flex:1 0 100%;gap:12px;flex-wrap:wrap;
@@ -774,6 +793,10 @@
         <circle cx="20" cy="20" r="1.5" fill="currentColor"/>
       </svg>
       <b id="clockTime">--:--:--</b>
+    </span>
+    <span class="bar-views" title="Site views">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4.5C7 4.5 2.7 7.6 1 12c1.7 4.4 6 7.5 11 7.5s9.3-3.1 11-7.5c-1.7-4.4-6-7.5-11-7.5zm0 12.5a5 5 0 110-10 5 5 0 010 10zm0-2.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z"/></svg>
+      <b id="viewsN" class="n">—</b>
     </span>
   </div>
 </header>
@@ -926,7 +949,8 @@
     var n = $('nav'); if(!n) return;
     var a = document.createElement('a');
     a.href = 'videos.html';
-    a.textContent = 'Videos';
+    a.className = 'nav-videos';
+    a.innerHTML = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2l10 6-10 6z"/></svg>Videos';
     n.appendChild(a);
   })();
 
@@ -1659,6 +1683,37 @@
         }
       }, {passive:true});
     }
+})();
+
+/* ---------- site views ----------
+   The number is shown to everyone, every time. But YOU are counted
+   only once: the first time this browser opens the site we add 1,
+   after that we only read. So a refresh changes nothing.
+   (If the counter is busy, we still show the number.) */
+(function(){
+  var box = document.getElementById('viewsN');
+  if(!box) return;
+  var counted = false;
+  try{ counted = localStorage.getItem('bv:counted') === '1'; }catch(e){}
+  var base = 'https://abacus.jasoncameron.dev/';
+
+  function show(d){
+    if(d && typeof d.value === 'number'){
+      box.textContent = d.value.toLocaleString();
+      if(!counted){ try{ localStorage.setItem('bv:counted','1'); }catch(e){} }
+    }
+  }
+  function read(){
+    fetch(base + 'get/blackveil/visits')
+      .then(function(r){ return r.json(); })
+      .then(show)
+      .catch(function(){});
+  }
+  if(counted){ read(); return; }
+  fetch(base + 'hit/blackveil/visits')
+    .then(function(r){ return r.json(); })
+    .then(show)
+    .catch(read);
 })();
 </script>
 </body>

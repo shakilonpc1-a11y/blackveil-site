@@ -11,122 +11,250 @@
 <style>
   :root{
     --bg:#000; --ink:#eef2f6; --dim:#9aa2ab; --line:rgba(238,242,246,.14);
-    --hot:#cfd6dd; --love:#ff4d6d; --card:#060607;
+    --hot:#cfd6dd; --love:#ff4d6d;
     --serif:"Bodoni Moda",Georgia,serif; --sans:"Manrope",system-ui,sans-serif;
   }
   *{box-sizing:border-box}
-  html,body{margin:0;background:var(--bg);color:var(--ink);
-    font-family:var(--sans);-webkit-font-smoothing:antialiased}
-  body{overflow-x:hidden}
+  html{margin:0;background:var(--bg);scroll-snap-type:y proximity}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden}
 
   /* ---------- top bar ---------- */
   .bar{position:fixed;left:0;right:0;top:0;z-index:30;
     display:flex;align-items:center;justify-content:space-between;gap:14px;
     padding:calc(11px + env(safe-area-inset-top,0px)) 16px 11px;
-    background:rgba(2,2,3,.92);border-bottom:1px solid var(--line)}
+    background:linear-gradient(180deg,rgba(0,0,0,.92),rgba(0,0,0,.55) 70%,rgba(0,0,0,0))}
   .bar a{color:var(--ink);text-decoration:none;font-family:var(--serif);font-size:1rem}
-  .bar .t{font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--dim)}
+  .bar a:hover{color:#fff}
+  .bar .t{font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;color:var(--dim)}
 
-  /* ---------- feed ---------- */
-  .feed{max-width:430px;margin:0 auto;
-    padding:calc(64px + env(safe-area-inset-top,0px)) 12px
-            calc(34px + env(safe-area-inset-bottom,0px));
-    display:flex;flex-direction:column;gap:30px}
+  /* ---------- one reel per screen ---------- */
+  .reel{min-height:100vh;min-height:100svh;position:relative;display:grid;place-items:center;
+    scroll-snap-align:center}
 
-  /* ---------- the card ----------
-     the platform's player fills the card; a bar hides its header at the
-     top and its caption / buttons at the bottom, so only the video shows */
-  .reel{position:relative;width:100%;aspect-ratio:9/16;max-height:76vh;
-    border:1px solid var(--line);border-radius:20px;overflow:hidden;
-    background:var(--card)}
-  .reel iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;background:#000}
+  /* phones: the video fills the whole screen, edge to edge */
+  .stage{position:relative;width:100vw;height:100vh;height:100svh;overflow:hidden;background:#000}
 
-  .reel .lid{position:absolute;left:0;right:0;z-index:3;pointer-events:none;background:var(--card)}
-  .reel .lid.t{top:0;height:62px}
-  .reel .lid.b{bottom:0;height:142px;
-    display:flex;align-items:flex-end;justify-content:space-between;gap:14px;
-    padding:0 16px 16px;pointer-events:auto;
-    background:linear-gradient(180deg,rgba(6,6,7,0) 0%,var(--card) 34%,var(--card) 100%)}
+  .stage video{width:100%;height:100%;display:block;object-fit:cover;background:#000}
 
-  /* tap-to-play cover */
-  .reel .cover{position:absolute;inset:0;z-index:4;cursor:pointer;
-    display:grid;place-content:center;justify-items:center;gap:13px;text-align:center;padding:24px}
-  .reel .cover .play{width:64px;height:64px;border-radius:50%;border:1px solid var(--line);
-    display:grid;place-items:center;background:rgba(255,255,255,.03)}
-  .reel .cover .play svg{width:20px;height:20px;fill:var(--ink);margin-left:3px}
-  .reel .cover .who{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--dim)}
-  .reel .cover .cap{font-family:var(--serif);font-size:1.05rem;line-height:1.4;max-width:26ch}
-  .reel.loaded .cover{display:none}
+  /* a landscape clip keeps its own shape, so nothing gets cropped */
+  .stage.wide{height:auto;max-height:100vh;max-height:100svh;border-radius:0}
 
-  /* ---------- love + views, sat on the bottom bar ---------- */
+  /* bigger screens: a centred 9:16 card instead */
+  @media (min-width:760px){
+    .reel{padding:calc(78px + env(safe-area-inset-top,0px)) 0 calc(34px + env(safe-area-inset-bottom,0px))}
+    .stage{width:min(100vw - 28px, calc((100svh - 190px) * 9 / 16));
+      height:auto;aspect-ratio:9/16;max-height:calc(100svh - 190px);
+      border:1px solid var(--line);border-radius:22px}
+    .stage.wide{width:min(100vw - 28px, calc((100svh - 190px) * 16 / 9));max-height:none;
+      border:1px solid var(--line);border-radius:22px}
+  }
+
+  /* tap the picture to toggle sound */
+  .sound{position:absolute;right:12px;top:12px;z-index:3;
+    width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,.22);
+    background:rgba(0,0,0,.42);color:var(--ink);display:grid;place-items:center;
+    cursor:pointer;padding:0;transition:background .25s ease,border-color .25s ease}
+  .sound:hover{background:rgba(0,0,0,.62);border-color:rgba(255,255,255,.4)}
+  .sound svg{width:17px;height:17px;fill:currentColor}
+
+  /* love + views, sitting on the bottom of the picture */
+  .strip{position:absolute;left:0;right:0;bottom:0;z-index:3;
+    display:flex;align-items:center;justify-content:space-between;gap:14px;
+    padding:44px 15px 14px;
+    background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.72))}
+
   .love{display:inline-flex;align-items:center;gap:9px;background:none;border:0;
-    padding:6px 0;color:var(--ink);font-family:var(--sans);font-size:.8rem;
-    cursor:pointer;transition:transform .22s ease,color .25s ease}
-  .love:active{transform:scale(.94)}
-  .love svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.6;
+    padding:5px 0;color:var(--ink);font-family:var(--sans);font-size:.82rem;
+    cursor:pointer;transition:transform .2s ease,color .25s ease}
+  .love:active{transform:scale(.92)}
+  .love svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.6;
     transition:fill .25s ease,stroke .25s ease}
   .love:hover svg{stroke:var(--love)}
   .love.on{color:var(--love)}
   .love.on svg{fill:var(--love);stroke:var(--love)}
   .love .n{font-variant-numeric:tabular-nums;color:var(--dim);transition:color .25s ease}
   .love.on .n{color:var(--love)}
-  .views{display:inline-flex;align-items:center;gap:8px;font-size:.58rem;
-    letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
-  .views img{height:18px;display:block;filter:grayscale(1);opacity:.85}
 
-  .note{max-width:430px;margin:30px auto 0;padding:0 16px;
-    font-size:.7rem;line-height:1.7;color:#767d86;text-align:center}
+  .views{display:inline-flex;align-items:center;gap:6px;color:var(--dim)}
+  .views svg{width:14px;height:14px;fill:var(--dim);flex:0 0 auto}
+  .views img{height:17px;display:block;opacity:.78}
+
+  /* ---------- comments: a button on the video, opens a panel ---------- */
+  .cta{display:inline-flex;align-items:center;gap:8px;background:none;border:0;
+    color:var(--ink);font-family:var(--sans);font-size:.82rem;cursor:pointer;
+    padding:5px 0;transition:transform .2s ease,color .25s ease}
+  .cta:active{transform:scale(.92)}
+  .cta svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.6}
+  .cta .n{font-variant-numeric:tabular-nums;color:var(--dim)}
+
+  .sheet{position:fixed;inset:0;z-index:60;display:none}
+  .sheet.open{display:block}
+  .sheet .veil{position:absolute;inset:0;background:rgba(0,0,0,.62);
+    opacity:0;transition:opacity .3s ease}
+  .sheet.open .veil{opacity:1}
+  .sheet-in{position:absolute;left:0;right:0;bottom:0;max-height:84vh;overflow-y:auto;
+    background:#08090a;border-top:1px solid var(--line);border-radius:22px 22px 0 0;
+    padding:16px 16px calc(24px + env(safe-area-inset-bottom,0px));
+    transform:translateY(100%);transition:transform .34s cubic-bezier(.22,.61,.36,1);
+    -webkit-overflow-scrolling:touch}
+  .sheet.open .sheet-in{transform:none}
+  .sheet-h{display:flex;align-items:center;gap:12px;margin:0 0 6px;
+    position:sticky;top:-16px;background:#08090a;padding:6px 0 10px;z-index:2}
+  .sheet-h b{font-family:var(--serif);font-weight:400;font-size:1.2rem}
+  .sheet-h span{font-family:var(--sans);font-size:.62rem;letter-spacing:.16em;color:var(--dim)}
+  .sheet-h button{margin-left:auto;background:none;border:0;color:var(--dim);cursor:pointer;
+    font-size:1.5rem;line-height:1;padding:0 4px}
+  .sheet-h button:hover{color:var(--ink)}
+  .sheet-note{font-size:.64rem;color:#7c848d;margin:0 0 20px;line-height:1.6}
+  .sheet-empty{font-size:.82rem;color:var(--dim);padding:14px 0 4px}
+
+  .clist{display:flex;flex-direction:column}
+  .cmt{padding:15px 0;border-bottom:1px solid rgba(238,242,246,.08)}
+  .cmt.rep{margin-left:28px;border-bottom:0;padding:11px 0 3px}
+  .cmt .who{display:flex;align-items:center;gap:9px;margin-bottom:7px}
+  .cmt .av{width:27px;height:27px;border-radius:50%;flex:0 0 auto;display:grid;place-items:center;
+    font-size:.66rem;background:rgba(255,255,255,.07);border:1px solid var(--line);color:var(--ink)}
+  .cmt.rep .av{width:22px;height:22px;font-size:.6rem}
+  .cmt .who b{font-weight:500;font-size:.79rem;color:var(--ink)}
+  .cmt .who i{font-style:normal;font-size:.6rem;letter-spacing:.1em;color:var(--dim);margin-left:auto}
+  .cmt .tx{margin:0;font-size:.87rem;line-height:1.62;color:#dfe5ea;
+    white-space:pre-wrap;word-break:break-word}
+  .rlink{background:none;border:0;padding:7px 0 0;cursor:pointer;font-family:var(--sans);
+    font-size:.59rem;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+  .rlink:hover{color:var(--ink)}
+
+  .cform{margin-top:28px;display:flex;flex-direction:column;gap:12px}
+  .cform input,.cform textarea{width:100%;background:rgba(255,255,255,.03);color:var(--ink);
+    border:1px solid var(--line);border-radius:14px;padding:12px 15px;
+    font-family:var(--sans);font-size:.84rem;outline:none;transition:border-color .3s ease}
+  .cform textarea{min-height:88px;resize:vertical;line-height:1.6}
+  .cform input:focus,.cform textarea:focus{border-color:rgba(238,242,246,.42)}
+  .cform input::placeholder,.cform textarea::placeholder{color:#6d757e}
+  .cform button{align-self:flex-end;cursor:pointer;background:rgba(255,255,255,.06);
+    color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:10px 28px;
+    font-family:var(--sans);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
+    transition:background .3s ease,border-color .3s ease}
+  .cform button:hover{background:rgba(255,255,255,.12);border-color:var(--ink)}
+
+  .creply{margin-top:12px;display:flex;flex-direction:column;gap:9px}
+  .creply textarea{width:100%;background:rgba(255,255,255,.03);color:var(--ink);
+    border:1px solid var(--line);border-radius:12px;padding:10px 13px;min-height:62px;
+    font-family:var(--sans);font-size:.82rem;outline:none;resize:vertical}
+  .creply .row{display:flex;gap:14px;justify-content:flex-end}
+  .creply button{background:none;border:0;color:var(--dim);cursor:pointer;font-family:var(--sans);
+    font-size:.59rem;letter-spacing:.16em;text-transform:uppercase}
+  .creply button.go{color:var(--ink)}
+
+  /* ---------- end of the feed ---------- */
+  .end{min-height:52svh;display:grid;place-content:center;gap:16px;text-align:center;
+    padding:40px 24px calc(60px + env(safe-area-inset-bottom,0px))}
+  .end p{font-family:var(--serif);font-size:1.15rem;line-height:1.5;color:var(--dim);margin:0}
+  .end a{color:var(--ink);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+    text-decoration:none;border-bottom:1px solid var(--line);padding-bottom:3px}
+  .end a:hover{border-color:var(--ink)}
 </style>
 </head>
 <body>
 
 <header class="bar">
   <a href="index.html">← Blackveil</a>
-  <span class="t">Videos · Demo</span>
+  <span class="t">Videos</span>
 </header>
 
-<main class="feed" id="feed"></main>
+<main id="feed"></main>
 
-<p class="note">Demo page — video only, love button, view counter.</p>
+<footer class="end">
+  <p>That's all for now.</p>
+  <a href="index.html">Back to the story</a>
+</footer>
 
 <script>
+/* ------------------------------------------------------------------
+   Add a video: drop the .mp4 into the videos/ folder, then add one
+   line here.  file = the path, id = a short tag for the love button,
+   caption = optional small line (leave '' for none).
+------------------------------------------------------------------ */
 var VIDEOS = [
-  {
-    platform: 'Instagram', id: 'ig-DZ8_TjEueMy',
-    frame: 'https://www.instagram.com/reel/DZ8_TjEueMy/embed/',
-    link:  'https://www.instagram.com/reel/DZ8_TjEueMy/'
-  },
-  {
-    platform: 'TikTok', id: 'tt-7614219881206074646',
-    frame: 'https://www.tiktok.com/embed/v2/7614219881206074646',
-    link:  'https://www.tiktok.com/@swaa4d/video/7614219881206074646'
-  }
+  { file: 'videos/happy-place.mp4', id: 'happy-place', caption: 'no plan..' },
+  { file: 'videos/lock-in.mp4',     id: 'lock-in',     caption: '' },
+  { file: 'videos/lake-wide.mp4',   id: 'lake-wide',   caption: '' },
+  { file: 'videos/plane-scene.mp4', id: 'plane-scene', caption: '' },
+  { file: 'videos/one-year.mp4',    id: 'one-year',    caption: '' },
+  { file: 'videos/tomorrow.mp4',    id: 'tomorrow',    caption: '' }
 ];
 
-var PLAY = '<span class="play"><svg viewBox="0 0 16 16"><path d="M4 2l10 6-10 6z"/></svg></span>';
-var HEART = '<svg viewBox="0 0 24 24"><path d="M12 20.5l-1.5-1.4C5.2 14.4 2 11.5 2 8a5 5 0 015-5c1.5 0 3 .7 4 1.9A5.3 5.3 0 0115 3a5 5 0 015 5c0 3.5-3.2 6.4-8.5 11.1z"/></svg>';
+var COMMENT_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 01-9 8.4 9.4 9.4 0 01-2.8-.4L4 21l1.6-4.2A8.2 8.2 0 013 11.5 8.4 8.4 0 0112 3a8.4 8.4 0 019 8.5z"/></svg>';
+
+var ICON_ON  = '<svg viewBox="0 0 24 24"><path d="M4 9h3l5-4v14l-5-4H4zm12.5 3a4.5 4.5 0 00-2.2-3.9v7.8A4.5 4.5 0 0016.5 12zM14.3 2.2v2.1a7.7 7.7 0 010 15.4v2.1a9.8 9.8 0 000-19.6z"/></svg>';
+var ICON_OFF = '<svg viewBox="0 0 24 24"><path d="M4 9h3l5-4v14l-5-4H4zm14.6-1.2l-1.4 1.4 1.8 1.8-1.8 1.8 1.4 1.4 1.8-1.8 1.8 1.8 1.4-1.4-1.8-1.8 1.8-1.8-1.4-1.4-1.8 1.8z"/></svg>';
+var HEART    = '<svg viewBox="0 0 24 24"><path d="M12 20.5l-1.5-1.4C5.2 14.4 2 11.5 2 8a5 5 0 015-5c1.5 0 3 .7 4 1.9A5.3 5.3 0 0115 3a5 5 0 015 5c0 3.5-3.2 6.4-8.5 11.1z"/></svg>';
 
 /* a love saved in this browser (a shared count needs a tiny server) */
 function loved(id){ try{ return localStorage.getItem('bv:love:'+id) === '1'; }catch(e){ return false; } }
 function setLoved(id, v){ try{ localStorage.setItem('bv:love:'+id, v ? '1':'0'); }catch(e){} }
 
-var VIEWS = 'https://hits.sh/blackveil.space/videos.svg?label=&color=9aa2ab&labelColor=111214&style=flat-square';
+/* every clip keeps its OWN count (a separate path per video) */
+function countURL(id){
+  return 'https://hits.sh/blackveil.space/' + id +
+         '.svg?label=%20&color=000000&labelColor=000000&style=flat';
+}
+var EYE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4.5C7 4.5 2.7 7.6 1 12c1.7 4.4 6 7.5 11 7.5s9.3-3.1 11-7.5c-1.7-4.4-6-7.5-11-7.5zm0 12.5a5 5 0 110-10 5 5 0 010 10zm0-2.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z"/></svg>';
 var feed = document.getElementById('feed');
+var vids = [];
 
 VIDEOS.forEach(function (v) {
-  var card = document.createElement('div');
-  card.className = 'reel';
-  card.innerHTML =
-    '<span class="lid t"></span>' +
-    '<div class="lid b"></div>' +
-    '<div class="cover">' + PLAY +
-      '<span class="who">' + v.platform + '</span>' +
-      '<span class="cap">Tap to play</span>' +
-    '</div>';
+  var reel = document.createElement('section');
+  reel.className = 'reel';
 
-  var bar = card.querySelector('.lid.b');
+  var stage = document.createElement('div');
+  stage.className = 'stage';
 
-  /* love */
+  var vid = document.createElement('video');
+  vid.src = v.file;
+  vid.muted = true;
+  vid.loop = true;
+  vid.playsInline = true;
+  vid.setAttribute('playsinline', '');
+  vid.setAttribute('webkit-playsinline', '');
+  vid.setAttribute('preload', 'metadata');
+  stage.appendChild(vid);
+
+  /* sound button */
+  var snd = document.createElement('button');
+  snd.className = 'sound';
+  snd.type = 'button';
+  snd.setAttribute('aria-label', 'Sound on');
+  snd.innerHTML = ICON_OFF;
+  snd.addEventListener('click', function (e) {
+    e.stopPropagation();
+    vid.muted = !vid.muted;
+    audioOn = !vid.muted;
+    snd.innerHTML = vid.muted ? ICON_OFF : ICON_ON;
+    snd.setAttribute('aria-label', vid.muted ? 'Sound on' : 'Sound off');
+    if (vid.paused) vid.play().catch(function(){});
+  });
+  stage.appendChild(snd);
+
+  /* a landscape clip must not be cropped — the frame takes its own shape */
+  vid.addEventListener('loadedmetadata', function () {
+    if (!vid.videoWidth || !vid.videoHeight) return;
+    if (vid.videoHeight < vid.videoWidth) {
+      stage.classList.add('wide');
+      stage.style.aspectRatio = vid.videoWidth + ' / ' + vid.videoHeight;
+    }
+  });
+
+  /* tap the picture → play/pause */
+  vid.addEventListener('click', function () {
+    if (vid.paused) vid.play().catch(function(){});
+    else vid.pause();
+  });
+
+  /* love + views strip */
+  var strip = document.createElement('div');
+  strip.className = 'strip';
+
   var on = loved(v.id);
   var love = document.createElement('button');
   love.className = 'love' + (on ? ' on' : '');
@@ -142,28 +270,246 @@ VIDEOS.forEach(function (v) {
     setLoved(v.id, now);
   });
 
-  /* how many views */
   var views = document.createElement('span');
   views.className = 'views';
-  views.innerHTML = 'views <img alt="" src="' + VIEWS + '">';
+  views.innerHTML = EYE;
+  var vimg = document.createElement('img');
+  vimg.alt = 'views';
+  views.appendChild(vimg);
+  var counted = false;
+  function countOnce(){
+    if (counted) return;          /* count a clip only when it is actually seen */
+    counted = true;
+    vimg.src = countURL(v.id);
+  }
 
-  bar.appendChild(love);
-  bar.appendChild(views);
+  strip.appendChild(love);
+  strip.appendChild(makeComments('bv:cm2:' + v.id));
+  strip.appendChild(views);
+  stage.appendChild(strip);
 
-  /* tap the cover → the player drops in */
-  card.querySelector('.cover').addEventListener('click', function () {
-    if (card.classList.contains('loaded')) return;
-    var f = document.createElement('iframe');
-    f.src = v.frame;
-    f.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture; clipboard-write');
-    f.setAttribute('allowfullscreen', '');
-    f.setAttribute('scrolling', 'no');
-    card.insertBefore(f, card.firstChild);
-    card.classList.add('loaded');
+  if (v.caption) {
+    var cap = document.createElement('span');
+    cap.style.cssText = 'position:absolute;left:0;right:0;bottom:54px;z-index:3;text-align:center;' +
+      'font-family:var(--serif);font-size:1rem;color:var(--ink);padding:0 18px;' +
+      'text-shadow:0 1px 3px rgba(0,0,0,.8),0 0 18px rgba(0,0,0,.6)';
+    cap.textContent = v.caption;
+    stage.appendChild(cap);
+  }
+
+  reel.appendChild(stage);
+  feed.appendChild(reel);
+  vids.push({ el: vid, box: reel, snd: snd, armed: false, count: countOnce });
+});
+
+/* ---------- sound ----------
+   Browsers never let a page start sound on its own - that is a rule, not a bug.
+   So a clip starts quiet, and the FIRST time you touch anywhere on the page,
+   the clip you are watching turns its sound on. After that it stays on. */
+var audioOn = false;
+
+function setSnd(rec){
+  if (!rec.snd) return;
+  rec.snd.innerHTML = rec.el.muted ? ICON_OFF : ICON_ON;
+  rec.snd.setAttribute('aria-label', rec.el.muted ? 'Sound on' : 'Sound off');
+}
+
+function onlyOne(rec){
+  /* whatever is playing, only this one may be heard */
+  vids.forEach(function(r){
+    if (r === rec) return;
+    if (!r.el.paused) r.el.pause();
+    if (!r.el.muted){ r.el.muted = true; setSnd(r); }
+  });
+}
+
+function playVisible(rec){
+  rec.el.muted = !audioOn;
+  var pr = rec.el.play();
+  if (pr && pr.catch) pr.catch(function(){
+    rec.el.muted = true;          /* refused sound -> slip back to quiet */
+    setSnd(rec);
+    rec.el.play().catch(function(){});
+  });
+  setSnd(rec);
+}
+
+function unlockSound(){
+  document.removeEventListener('pointerdown', unlockSound, true);
+  document.removeEventListener('touchstart', unlockSound, true);
+  document.removeEventListener('keydown', unlockSound, true);
+  audioOn = true;
+  var live = vids.filter(function(r){ return r.armed; })[0];
+  if (live && live.el.muted){
+    live.el.muted = false;
+    setSnd(live);
+    live.el.play().catch(function(){});
+  }
+}
+document.addEventListener('pointerdown', unlockSound, true);
+document.addEventListener('touchstart', unlockSound, true);
+document.addEventListener('keydown', unlockSound, true);
+
+/* play the one you are looking at, pause the rest, count each one once */
+if ('IntersectionObserver' in window) {
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      var rec = vids.filter(function (r) { return r.box === en.target; })[0];
+      if (!rec) return;
+      if (en.intersectionRatio > 0.6) {
+        onlyOne(rec);              /* every other clip goes quiet first */
+        rec.armed = true;
+        if (rec.count) rec.count();
+        playVisible(rec);
+      } else {
+        rec.el.pause();            /* off screen -> stop */
+        rec.el.muted = true;       /* and make sure it cannot be heard */
+        setSnd(rec);
+      }
+    });
+  }, { threshold: [0, 0.6, 1] });
+  vids.forEach(function (r) { io.observe(r.box); });
+}
+
+/* pause everything when the page is hidden */
+document.addEventListener('visibilitychange', function () {
+  if (document.hidden) vids.forEach(function (r) { r.el.pause(); });
+});
+
+/* ------------------------------------------------------------------
+   Comments - a button on the video (next to love and views) that
+   opens a panel. A DEMO: they live in this browser only.
+------------------------------------------------------------------ */
+
+function makeComments(key, seed) {
+  var store;
+  try { store = JSON.parse(localStorage.getItem(key) || 'null'); } catch (e) { store = null; }
+  if (!store) { store = seed || []; save(); }
+
+  function save() { try { localStorage.setItem(key, JSON.stringify(store)); } catch (e) {} }
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
+    });
+  }
+  function ago(t) {
+    var s = Math.floor((Date.now() - t) / 1000);
+    if (s < 60) return 'just now';
+    if (s < 3600) return Math.floor(s / 60) + 'm';
+    if (s < 86400) return Math.floor(s / 3600) + 'h';
+    return Math.floor(s / 86400) + 'd';
+  }
+
+  /* ---------- the panel it opens ---------- */
+  var sheet = document.createElement('div');
+  sheet.className = 'sheet';
+  sheet.innerHTML =
+    '<div class="veil"></div>' +
+    '<div class="sheet-in">' +
+      '<div class="sheet-h"><b>Comments</b><span class="n"></span>' +
+        '<button type="button" class="x" aria-label="Close">\u00d7</button></div>' +
+      '<div class="clist"></div>' +
+      '<form class="cform" autocomplete="off">' +
+        '<input type="text" maxlength="24" placeholder="Your name (optional)">' +
+        '<textarea maxlength="300" placeholder="Write a comment\u2026" required></textarea>' +
+        '<button type="submit">Post</button>' +
+      '</form>' +
+    '</div>';
+  document.body.appendChild(sheet);
+
+  var list   = sheet.querySelector('.clist');
+  var count  = sheet.querySelector('.sheet-h .n');
+  var form   = sheet.querySelector('.cform');
+  var box    = form.querySelector('textarea');
+  var nameIn = form.querySelector('input');
+  var inner  = sheet.querySelector('.sheet-in');
+
+  function close() { sheet.classList.remove('open'); }
+  sheet.querySelector('.veil').addEventListener('click', close);
+  sheet.querySelector('.x').addEventListener('click', close);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+
+  /* ---------- the button that sits on the video ---------- */
+  var btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'cta';
+  btn.setAttribute('aria-label', 'Comments');
+  btn.innerHTML = COMMENT_ICON + '<span class="n"></span>';
+  btn.addEventListener('click', function () {
+    sheet.classList.add('open');
+    inner.scrollTop = 0;
+    Array.prototype.forEach.call(sheet.querySelectorAll('.creply'), function (el) { el.remove(); });
   });
 
-  feed.appendChild(card);
-});
+  function myName() { return nameIn.value.trim().slice(0, 24); }
+
+  function node(c, depth) {
+    var el = document.createElement('div');
+    el.className = 'cmt' + (depth ? ' rep' : '');
+    var head = document.createElement('div');
+    head.className = 'who';
+    head.innerHTML = '<span class="av">' + esc((c.name || '?').charAt(0).toUpperCase()) + '</span>' +
+                     '<b>' + esc(c.name || 'Anonymous') + '</b><i>' + ago(c.t) + '</i>';
+    var p = document.createElement('p');
+    p.className = 'tx';
+    p.textContent = c.text;
+    var rb = document.createElement('button');
+    rb.type = 'button'; rb.className = 'rlink'; rb.textContent = 'Reply';
+    rb.addEventListener('click', function () { ask(c.id, el); });
+    el.appendChild(head); el.appendChild(p); el.appendChild(rb);
+    store.filter(function (r) { return r.parent === c.id; })
+         .sort(function (a, b) { return a.t - b.t; })
+         .forEach(function (r) { el.appendChild(node(r, depth + 1)); });
+    return el;
+  }
+
+  function ask(pid, host) {
+    var open = host.querySelector('.creply');
+    if (open) { open.remove(); return; }
+    var rbox = document.createElement('div');
+    rbox.className = 'creply';
+    rbox.innerHTML = '<textarea maxlength="300" placeholder="Reply\u2026"></textarea>' +
+      '<div class="row"><button type="button" class="no">Cancel</button>' +
+      '<button type="button" class="go">Reply</button></div>';
+    var ta = rbox.querySelector('textarea');
+    rbox.querySelector('.no').addEventListener('click', function () { rbox.remove(); });
+    rbox.querySelector('.go').addEventListener('click', function () {
+      var v = ta.value.trim();
+      if (!v) return;
+      store.push({ id: Date.now(), parent: pid, name: myName(), text: v, t: Date.now() });
+      save(); render();
+    });
+    host.appendChild(rbox);
+    ta.focus();
+  }
+
+  function render() {
+    list.innerHTML = '';
+    var tops = store.filter(function (c) { return !c.parent; })
+                    .sort(function (a, b) { return b.t - a.t; });
+    if (!tops.length) {
+      var e = document.createElement('p');
+      e.className = 'sheet-empty';
+      e.textContent = 'No comments yet. Be the first.';
+      list.appendChild(e);
+    }
+    tops.forEach(function (c) { list.appendChild(node(c, 0)); });
+    var n = String(store.length);
+    count.textContent = store.length ? '(' + n + ')' : '';
+    btn.querySelector('.n').textContent = store.length ? n : '';
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var v = box.value.trim();
+    if (!v) return;
+    store.push({ id: Date.now(), parent: 0, name: myName(), text: v, t: Date.now() });
+    save(); box.value = ''; render();
+  });
+
+  render();
+  return btn;
+}
 </script>
-</body>
+</body></body>
 </html>
