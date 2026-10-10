@@ -3,7 +3,7 @@
    time they are used, so the site keeps working without internet.
    Bump CACHE when you change index.html so phones pick up the new version. */
 
-const CACHE = 'blackveil-v18';
+const CACHE = 'blackveil-v19';
 
 const CORE = [
   './',

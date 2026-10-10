@@ -123,6 +123,17 @@
   .rlink{background:none;border:0;padding:7px 0 0;cursor:pointer;font-family:var(--sans);
     font-size:.59rem;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
   .rlink:hover{color:var(--ink)}
+  .cbar{display:flex;align-items:center;gap:16px;margin-top:7px}
+  .cbar .rlink{padding:0}
+  .lk{display:inline-flex;align-items:center;gap:6px;background:none;border:0;padding:0;
+    cursor:pointer;color:var(--dim);font-family:var(--sans);font-size:.6rem;
+    letter-spacing:.14em;text-transform:uppercase;transition:color .25s ease}
+  .lk svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.7;
+    transition:fill .25s ease,stroke .25s ease}
+  .lk:hover svg{stroke:var(--love)}
+  .lk.on{color:var(--love)}
+  .lk.on svg{fill:var(--love);stroke:var(--love)}
+  .lk .n{font-variant-numeric:tabular-nums}
 
   .cform{margin-top:28px;display:flex;flex-direction:column;gap:12px}
   .cform input,.cform textarea{width:100%;background:rgba(255,255,255,.03);color:var(--ink);
@@ -208,6 +219,73 @@ var SB_HDR = { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-T
 var SB_COUNTS = {};        /* clip id -> how many comments */
 var SB_BUTTONS = [];       /* the little counters on the clips */
 
+/* ---------- likes ----------
+   Shared and real: one like per browser, and the number you see is
+   everyone's. Works for a clip and for a single comment. */
+var SB_ME = (function(){
+  try {
+    var v = localStorage.getItem('bv:me');
+    if(!v){ v = 'b' + Math.random().toString(36).slice(2) + Date.now().toString(36); localStorage.setItem('bv:me', v); }
+    return v;
+  } catch(e){ return 'b' + Math.random().toString(36).slice(2) + Date.now().toString(36); }
+})();
+var SB_LIKES = {};   /* 'kind|ref' -> how many */
+var SB_MINE  = {};   /* 'kind|ref' -> I liked this one */
+var SB_PAINT = [];   /* things that need repainting */
+
+function likeKey(kind, ref){ return kind + '|' + ref; }
+function sbRepaint(){ SB_PAINT.forEach(function(f){ try{ f(); }catch(e){} }); }
+
+function likeButton(kind, ref, cls){
+  var b = document.createElement('button');
+  b.type = 'button';
+  b.className = cls || 'lk';
+  b.setAttribute('aria-label', kind === 'clip' ? 'Like this clip' : 'Like this comment');
+  b.innerHTML = HEART + '<span class="n"></span>';
+
+  function paint(){
+    var k = likeKey(kind, ref);
+    var n = SB_LIKES[k] || 0;
+    b.querySelector('.n').textContent = n ? n : '';
+    b.classList.toggle('on', !!SB_MINE[k]);
+  }
+
+  b.addEventListener('click', function(e){
+    e.stopPropagation();
+    var k   = likeKey(kind, ref);
+    var had = !!SB_MINE[k];
+    fetch(SB_URL + '/rest/v1/rpc/' + (had ? 'unlike_this' : 'like_this'), {
+      method: 'POST',
+      headers: SB_HDR,
+      body: JSON.stringify({ p_kind: kind, p_ref: String(ref), p_who: SB_ME })
+    })
+    .then(function(r){ if(!r.ok) throw new Error('like ' + r.status); return r.json(); })
+    .then(function(n){
+      SB_LIKES[k] = Number(n) || 0;
+      if(had) delete SB_MINE[k]; else SB_MINE[k] = true;
+      sbRepaint();
+    })
+    .catch(function(){});
+  });
+
+  SB_PAINT.push(paint);
+  paint();
+  return b;
+}
+
+/* read every like once, so each counter opens with the real number */
+fetch(SB_URL + '/rest/v1/like_votes?select=kind,ref,who', { headers: SB_HDR })
+  .then(function(r){ return r.ok ? r.json() : []; })
+  .then(function(rows){
+    rows.forEach(function(r){
+      var k = likeKey(r.kind, r.ref);
+      SB_LIKES[k] = (SB_LIKES[k] || 0) + 1;
+      if(r.who === SB_ME) SB_MINE[k] = true;
+    });
+    sbRepaint();
+  })
+  .catch(function(){});
+
 var feed = document.getElementById('feed');
 var vids = [];
 
@@ -263,20 +341,7 @@ VIDEOS.forEach(function (v) {
   var strip = document.createElement('div');
   strip.className = 'strip';
 
-  var on = loved(v.id);
-  var love = document.createElement('button');
-  love.className = 'love' + (on ? ' on' : '');
-  love.type = 'button';
-  love.setAttribute('aria-pressed', on ? 'true' : 'false');
-  love.innerHTML = HEART + '<span class="n">' + (on ? 1 : 0) + '</span>';
-  love.addEventListener('click', function (e) {
-    e.stopPropagation();
-    var now = !love.classList.contains('on');
-    love.classList.toggle('on', now);
-    love.setAttribute('aria-pressed', now ? 'true' : 'false');
-    love.querySelector('.n').textContent = now ? 1 : 0;
-    setLoved(v.id, now);
-  });
+  var love = likeButton('clip', v.id, 'love');
 
   var views = document.createElement('span');
   views.className = 'views';
@@ -509,7 +574,12 @@ function makeComments(videoId) {
     var rb = document.createElement('button');
     rb.type = 'button'; rb.className = 'rlink'; rb.textContent = 'Reply';
     rb.addEventListener('click', function () { ask(c.id, el); });
-    el.appendChild(head); el.appendChild(p); el.appendChild(rb);
+    el.appendChild(head); el.appendChild(p);
+    var bar = document.createElement('div');
+    bar.className = 'cbar';
+    bar.appendChild(likeButton('comment', c.id));
+    bar.appendChild(rb);
+    el.appendChild(bar);
     store.filter(function (r) { return Number(r.parent) === Number(c.id); })
          .sort(function (a, b) { return a.t - b.t; })
          .forEach(function (r) { el.appendChild(node(r, depth + 1)); });
