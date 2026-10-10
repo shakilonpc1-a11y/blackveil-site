@@ -200,6 +200,14 @@ function countURL(id){
          '.svg?label=%20&color=000000&labelColor=000000&style=flat';
 }
 var EYE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4.5C7 4.5 2.7 7.6 1 12c1.7 4.4 6 7.5 11 7.5s9.3-3.1 11-7.5c-1.7-4.4-6-7.5-11-7.5zm0 12.5a5 5 0 110-10 5 5 0 010 10zm0-2.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z"/></svg>';
+/* shared-comment settings - declared BEFORE the clips are built,
+   because each clip registers its little counter while it is created */
+var SB_URL = 'https://vybrxcfyhsfkymbdbbak.supabase.co';
+var SB_KEY = 'sb_publishable_GdojmJ37cI5sEAAGeQ-EhA_h6iM5ptZ';
+var SB_HDR = { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' };
+var SB_COUNTS = {};        /* clip id -> how many comments */
+var SB_BUTTONS = [];       /* the little counters on the clips */
+
 var feed = document.getElementById('feed');
 var vids = [];
 
@@ -387,12 +395,6 @@ document.addEventListener('visibilitychange', function () {
    it is meant to sit in browser code, and the database rules only let
    people READ and ADD - nobody can change or delete anyone's comment.
 ------------------------------------------------------------------ */
-var SB_URL = 'https://vybrxcfyhsfkymbdbbak.supabase.co';
-var SB_KEY = 'sb_publishable_GdojmJ37cI5sEAAGeQ-EhA_h6iM5ptZ';
-var SB_HDR = { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' };
-
-var SB_COUNTS = {};        /* clip id -> how many comments */
-var SB_BUTTONS = [];       /* the little counters on the clips */
 
 function sbRows(videoId){
   return fetch(SB_URL + '/rest/v1/comments?video=eq.' + encodeURIComponent(videoId) +
